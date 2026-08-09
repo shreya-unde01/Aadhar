@@ -2,8 +2,11 @@
    AADHAR — Auth pages (login / signup)
    Split-screen: brand story + trail illustration on one side, form on the
    other. Avoids the generic "centered card on gradient" auth template.
+  THIS ARE THE CHANGES DONE BY POOJA MAHALE IN AUTH.CSS FILE
+
    ========================================================================== */
 
+   
 .auth-shell {
   min-height: 100vh;
   display: grid;
