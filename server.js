@@ -18,7 +18,7 @@ const server = http.createServer(app);
 initSockets(server);
 
 // ---------------------------------------------------------------------------
-// Database
+// Database connection
 // ---------------------------------------------------------------------------
 connectDB().then(() => {
   const { ensureBadgesSeeded } = require('./utils/badgeEngine');
