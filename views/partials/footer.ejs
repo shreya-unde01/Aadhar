@@ -1,0 +1,18 @@
+<footer class="site-footer">
+  <div class="container site-footer-inner">
+    <span>&copy; <%= new Date().getFullYear() %> Lions Club — The Soul Serves</span>
+    <span class="muted">Built for Lions Club, volunteers, and donors.</span>
+  </div>
+</footer>
+<style>
+  .site-footer { border-top: 1px solid var(--color-border); padding: var(--space-lg) 0; margin-top: var(--space-2xl); }
+  .site-footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-sm); font-size: var(--fs-body-sm); color: var(--color-ink-soft); }
+</style>
+
+<!-- Real-time updates (Phase 5/6). Authenticated users get personal rooms
+     via their existing login cookie (see sockets/index.js); anonymous
+     visitors still connect so public impact counters can update live. -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  window.aadharSocket = io();
+</script>

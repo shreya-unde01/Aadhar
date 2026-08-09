@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: `Assign — ${donation.donationCode}` }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Assign a Volunteer</h1>
+      <p class="muted">
+        <%= donation.donationCode %> · <span style="text-transform:capitalize;"><%= donation.type %></span>
+        · <%= donation.quantity %> <%= donation.unit || '' %> · from <%= donation.donorId.name %>
+        <% if (donation.urgent) { %> · <strong style="color: var(--color-danger);">URGENT</strong><% } %>
+      </p>
+    </div>
+
+    <% if (errors) { %>
+      <div class="alert alert-error"><% errors.forEach(e => { %><p class="mb-0"><%= e %></p><% }) %></div>
+    <% } %>
+
+    <% if (donation.status !== 'pending') { %>
+      <div class="alert alert-success">
+        This donation is already <strong><%= donation.status %></strong><% if (donation.assignedVolunteerId) { %>, assigned to a volunteer<% } %>.
+      </div>
+    <% } %>
+
+    <div class="card">
+      <p class="muted mb-0">Pickup: <%= donation.pickupLocation.address %></p>
+      <% if (!hasCoords) { %>
+        <p class="hint">This donation has no coordinates, so volunteers are shown alphabetically rather than by distance.</p>
+      <% } else if (rankingMethod === 'distance-matrix') { %>
+        <p class="hint">📍 Ranked by real road distance and travel time (Google Distance Matrix).</p>
+      <% } else if (rankingMethod === 'haversine') { %>
+        <p class="hint">📍 Ranked by straight-line distance — add a Google Maps API key in <code>.env</code> for real travel-time ranking.</p>
+      <% } %>
+      <% if (mapsEnabled && donation.pickupLocation.lat != null && donation.pickupLocation.lng != null) { %>
+        <iframe
+          class="map-embed mt-sm"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed/v1/place?key=<%= googleMapsApiKey %>&q=<%= donation.pickupLocation.lat %>,<%= donation.pickupLocation.lng %>&zoom=14"
+        ></iframe>
+      <% } %>
+    </div>
+
+    <% if (donation.status === 'pending') { %>
+      <form method="POST" action="/admin/donations/<%= donation._id %>/assign" class="card mt-lg">
+        <h2>Delivery Destination</h2>
+        <div class="field">
+          <label for="deliveryAddress">Delivery Address</label>
+          <input type="text" name="deliveryAddress" id="deliveryAddress" value="<%= defaultDeliveryAddress %>" placeholder="Where the volunteer should deliver to" required>
+        </div>
+        <hr class="divider">
+
+        <h2>Choose a Volunteer</h2>
+        <% if (ranked.length === 0) { %>
+          <p class="muted">No approved, available volunteers right now. Approve someone from <a href="/admin/volunteers?tab=pending">pending volunteers</a> first.</p>
+        <% } else { %>
+          <div class="volunteer-picker">
+            <% ranked.forEach((r, i) => { %>
+              <label class="volunteer-option">
+                <input type="radio" name="volunteerId" value="<%= r.volunteer._id %>" <%= i === 0 ? 'checked' : '' %> required>
+                <div>
+                  <strong><%= r.volunteer.name %></strong>
+                  <span class="muted"> · <%= r.volunteer.phone %></span>
+                  <% if (r.volunteer.avgRating > 0) { %><span class="muted"> · ⭐ <%= r.volunteer.avgRating.toFixed(1) %></span><% } %>
+                  <% if (r.distanceKm != null) { %>
+                    <span class="pill pill-assigned"><%= r.distanceKm.toFixed(1) %> km<% if (r.durationMin != null) { %> · ~<%= r.durationMin %> min<% } %></span>
+                  <% } %>
+                  <% if (i === 0 && r.distanceKm != null) { %><span class="pill pill-delivered">Nearest</span><% } %>
+                </div>
+              </label>
+            <% }) %>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block mt-lg">Assign Volunteer</button>
+        <% } %>
+      </form>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 720px; margin: 0 auto; }
+    .divider { border: none; border-top: 1px solid var(--color-border); margin: var(--space-md) 0; }
+    .volunteer-picker { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .volunteer-option { display: flex; align-items: center; gap: var(--space-sm); border: 1.5px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); cursor: pointer; }
+    .volunteer-option:has(input:checked) { border-color: var(--color-primary); background: var(--color-primary-tint); }
+    .volunteer-option input { width: auto; }
+    .map-embed { width: 100%; height: 220px; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+  </style>
+</body>
+</html>

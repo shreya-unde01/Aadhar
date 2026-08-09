@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Our Impact' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container impact-page">
+    <div class="form-page-head">
+      <span class="eyebrow">Live, public, no login required</span>
+      <h1>Our Impact</h1>
+      <p class="muted" style="font-size: var(--fs-body-lg); max-width: 60ch;">
+        Every number below comes straight from the database and updates the moment a delivery is confirmed —
+        nothing here is a mockup or a manually-updated figure.
+      </p>
+    </div>
+
+    <div class="stat-grid-public mt-lg">
+      <div class="stat-card-public">
+        <span class="stat-value-public" id="stat-meals" data-count-to="<%= stats.mealsDelivered %>">0</span>
+        <span class="stat-label-public">Meals Served</span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" id="stat-people" data-count-to="<%= stats.peopleHelpedEstimate %>">0</span>
+        <span class="stat-label-public">People Helped <span class="muted" style="font-size:0.7em;">(est.)</span></span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" id="stat-waste" data-count-to="<%= stats.wasteReducedKg %>">0</span>
+        <span class="stat-label-public">kg Waste Reduced</span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" id="stat-delivered" data-count-to="<%= stats.donationsDelivered %>">0</span>
+        <span class="stat-label-public">Donations Delivered</span>
+      </div>
+    </div>
+
+    <h2 class="mt-lg">The Community Behind It</h2>
+    <div class="stat-grid-public">
+      <div class="stat-card-public">
+        <span class="stat-value-public" data-count-to="<%= stats.totalDonations %>">0</span>
+        <span class="stat-label-public">Total Donations Submitted</span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" data-count-to="<%= stats.donorCount %>">0</span>
+        <span class="stat-label-public">Registered Donors</span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" data-count-to="<%= stats.activeVolunteers %>">0</span>
+        <span class="stat-label-public">Active Volunteers</span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" data-count-to="<%= stats.ngoCount %>">0</span>
+        <span class="stat-label-public">Lions Club</span>
+      </div>
+    </div>
+
+    <h2 class="mt-lg">Beyond Food</h2>
+    <div class="stat-grid-public" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="stat-card-public">
+        <span class="stat-value-public">₹<%= stats.moneyRaised.toLocaleString('en-IN') %></span>
+        <span class="stat-label-public">Money Donated</span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" data-count-to="<%= stats.itemsDistributed %>">0</span>
+        <span class="stat-label-public">Items Distributed <span class="muted" style="font-size:0.7em;">(clothes, grocery, medicine, books)</span></span>
+      </div>
+      <div class="stat-card-public">
+        <span class="stat-value-public" data-count-to="<%= stats.skillHoursOffered %>">0</span>
+        <span class="stat-label-public">Skill Hours Offered</span>
+      </div>
+    </div>
+
+    <div class="share-row mt-lg">
+      <span class="muted" style="font-size: var(--fs-body-sm);">Share this impact:</span>
+      <a class="share-btn" target="_blank" rel="noopener" href="https://wa.me/?text=See%20the%20live%20impact%20AADHAR%20is%20making">WhatsApp</a>
+      <a class="share-btn" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=See%20the%20live%20impact%20AADHAR%20is%20making">X / Twitter</a>
+      <button class="share-btn" id="copy-link-btn" type="button">Copy Link</button>
+    </div>
+
+    <p class="text-center mt-lg"><a href="/signup">Want to be part of these numbers? Get started →</a></p>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .impact-page { padding: var(--space-xl) 0; }
+    .eyebrow { display: inline-block; font-size: var(--fs-caption); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-secondary-dark); background: var(--color-secondary-tint); padding: 0.3em 0.9em; border-radius: var(--radius-full); margin-bottom: var(--space-sm); }
+    .stat-grid-public { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
+    .stat-card-public { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-lg); text-align: center; box-shadow: var(--shadow-sm); }
+    .stat-value-public { display: block; font-family: var(--font-display); font-size: var(--fs-display-lg); font-weight: 700; color: var(--color-primary); }
+    .stat-label-public { color: var(--color-ink-soft); font-weight: 600; font-size: var(--fs-body-sm); }
+    .share-row { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; }
+    .share-btn { border: 1.5px solid var(--color-border); border-radius: var(--radius-full); padding: 0.4em 1em; font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink); background: var(--color-surface); cursor: pointer; }
+    .share-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    @media (max-width: 860px) { .stat-grid-public { grid-template-columns: repeat(2, 1fr) !important; } }
+  </style>
+  <script src="/js/counter-animate.js"></script>
+  <script>
+    (function () {
+      var copyBtn = document.getElementById('copy-link-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function () {
+          navigator.clipboard.writeText(window.location.href).then(function () {
+            copyBtn.textContent = 'Copied!';
+            setTimeout(function () { copyBtn.textContent = 'Copy Link'; }, 1500);
+          });
+        });
+      }
+
+      if (window.aadharSocket) {
+        window.aadharSocket.on('impact:update', function (payload) {
+          var mealsEl = document.getElementById('stat-meals');
+          var peopleEl = document.getElementById('stat-people');
+          var wasteEl = document.getElementById('stat-waste');
+          var deliveredEl = document.getElementById('stat-delivered');
+          if (payload.type === 'food') {
+            if (mealsEl) window.AadharCounters.bump(mealsEl, payload.quantity);
+            if (wasteEl) window.AadharCounters.bump(wasteEl, payload.quantity);
+          }
+          if (peopleEl) window.AadharCounters.bump(peopleEl, 3);
+          if (deliveredEl) window.AadharCounters.bump(deliveredEl, 1);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

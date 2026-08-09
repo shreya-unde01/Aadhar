@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Manage Volunteers' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>Manage Volunteers</h1>
+      <p class="muted">Approve new signups, review ratings, and manage who's active.</p>
+    </div>
+
+    <div class="filter-tabs">
+      <a href="/admin/volunteers?tab=pending" class="filter-tab <%= activeTab === 'pending' ? 'active' : '' %>">Pending Approval</a>
+      <a href="/admin/volunteers?tab=active" class="filter-tab <%= activeTab === 'active' ? 'active' : '' %>">Active</a>
+      <a href="/admin/volunteers?tab=inactive" class="filter-tab <%= activeTab === 'inactive' ? 'active' : '' %>">Inactive / Rejected</a>
+    </div>
+
+    <% if (activeTab === 'pending') { %>
+      <div id="live-banner" class="alert alert-success" style="display:none; cursor:pointer;" onclick="location.reload()">
+        🔄 A new volunteer just signed up — click to refresh.
+      </div>
+    <% } %>
+
+    <% if (volunteers.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">No volunteers in this list.</p></div>
+    <% } else { %>
+      <div class="donation-cards">
+        <% volunteers.forEach(v => { %>
+          <div class="card">
+            <div class="section-heading" style="margin-bottom: var(--space-xs);">
+              <a href="/admin/volunteers/<%= v._id %>"><strong><%= v.name %></strong></a>
+              <% if (v.avgRating > 0) { %><span class="muted">⭐ <%= v.avgRating.toFixed(1) %> (<%= v.ratingCount %>)</span><% } %>
+            </div>
+            <p class="muted mb-0"><%= v.email %> · <%= v.phone %></p>
+            <p class="muted" style="font-size: var(--fs-caption);">Completed tasks: <%= v.completedTasks %></p>
+
+            <% if (activeTab === 'pending') { %>
+              <div class="row-actions">
+                <form method="POST" action="/admin/volunteers/<%= v._id %>/approve" class="inline-form"><button class="btn btn-primary btn-sm">Approve</button></form>
+                <form method="POST" action="/admin/volunteers/<%= v._id %>/reject" class="inline-form"><button class="btn btn-outline btn-sm">Reject</button></form>
+              </div>
+            <% } else if (activeTab === 'active') { %>
+              <div class="row-actions">
+                <form method="POST" action="/admin/volunteers/<%= v._id %>/deactivate" class="inline-form"><button class="btn btn-outline btn-sm">Deactivate</button></form>
+              </div>
+            <% } else { %>
+              <div class="row-actions">
+                <form method="POST" action="/admin/volunteers/<%= v._id %>/reactivate" class="inline-form"><button class="btn btn-outline btn-sm">Reactivate</button></form>
+              </div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .filter-tabs { display: flex; gap: var(--space-xs); flex-wrap: wrap; margin-bottom: var(--space-lg); }
+    .filter-tab { padding: 0.4em 1em; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink-soft); }
+    .filter-tab.active, .filter-tab:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-tint); }
+    .donation-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+    .row-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-sm); }
+  </style>
+  <% if (activeTab === 'pending') { %>
+    <script>
+      if (window.aadharSocket) {
+        window.aadharSocket.on('volunteer:new', function () {
+          document.getElementById('live-banner').style.display = 'block';
+        });
+      }
+    </script>
+  <% } %>
+</body>
+</html>

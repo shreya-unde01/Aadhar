@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Logistics' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>Logistics</h1>
+      <p class="muted">Scheduled pickups in progress. "Directions" opens the full route in Google Maps.</p>
+    </div>
+
+    <div id="live-banner" class="alert alert-success" style="display:none; cursor:pointer;" onclick="location.reload()">
+      🔄 A task just updated — click to refresh.
+    </div>
+
+    <% if (tasks.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">No active pickups right now.</p></div>
+    <% } else { %>
+      <div class="donation-cards">
+        <% tasks.forEach(t => { %>
+          <div class="card" data-task-id="<%= t._id %>">
+            <div class="section-heading" style="margin-bottom: var(--space-xs);">
+              <strong><%= t.donationId.donationCode %></strong>
+              <span class="pill pill-<%= t.status === 'picked' ? 'picked' : 'assigned' %>"><%= t.status %></span>
+            </div>
+            <p class="mb-0" style="text-transform:capitalize;"><%= t.donationId.type %> · <%= t.donationId.quantity %></p>
+            <p class="muted mb-0" style="font-size: var(--fs-body-sm);">Volunteer: <%= t.volunteerId.name %> · <%= t.volunteerId.phone %></p>
+            <p class="muted mb-0" style="font-size: var(--fs-caption);">
+              Pickup: <%= new Date(t.donationId.timeSlot.date).toLocaleDateString() %>, <%= t.donationId.timeSlot.startTime %>–<%= t.donationId.timeSlot.endTime %>
+              <% if (t.donationId.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
+            </p>
+
+            <div class="otp-box mt-sm">
+              <span class="otp-label">Delivery OTP</span>
+              <span class="otp-value"><%= t.deliveryOtp %></span>
+              <span class="hint mb-0">There's no SMS/email gateway wired up — relay this to the volunteer by phone when they're at the drop-off point.</span>
+            </div>
+
+            <% if (mapsEnabled) { %>
+              <iframe
+                class="map-embed mt-sm"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed/v1/directions?key=<%= googleMapsApiKey %>&origin=<%= encodeURIComponent(t.pickupLocation.address) %>&destination=<%= encodeURIComponent(t.deliveryLocation.address) %>"
+              ></iframe>
+            <% } %>
+
+            <a
+              class="btn btn-outline btn-sm mt-sm"
+              target="_blank" rel="noopener"
+              href="https://www.google.com/maps/dir/?api=1&origin=<%= encodeURIComponent(t.pickupLocation.address) %>&destination=<%= encodeURIComponent(t.deliveryLocation.address) %>"
+            >🗺️ Open in Google Maps</a>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .donation-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+    .map-embed { width: 100%; height: 180px; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+    .otp-box { background: var(--color-primary-tint); border-radius: var(--radius-md); padding: var(--space-sm); }
+    .otp-label { display: block; font-size: var(--fs-caption); font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-primary-dark); }
+    .otp-value { display: block; font-family: var(--font-mono); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-ink); letter-spacing: 0.08em; margin: 2px 0; }
+  </style>
+  <script>
+    if (window.aadharSocket) {
+      window.aadharSocket.on('task:update', function () {
+        document.getElementById('live-banner').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>

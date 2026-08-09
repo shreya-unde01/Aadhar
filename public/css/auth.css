@@ -1,0 +1,120 @@
+/* ==========================================================================
+   AADHAR — Auth pages (login / signup)
+   Split-screen: brand story + trail illustration on one side, form on the
+   other. Avoids the generic "centered card on gradient" auth template.
+   ========================================================================== */
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.auth-brand {
+  background: var(--color-secondary-dark);
+  color: #fff;
+  padding: var(--space-xl) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.auth-brand::after {
+  /* soft ambient glow, quiet, not decorative-for-its-own-sake */
+  content: '';
+  position: absolute;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(227, 93, 37, 0.35), transparent 70%);
+  bottom: -180px;
+  right: -140px;
+  pointer-events: none;
+}
+.auth-brand-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+.auth-brand-logo-image {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+.auth-brand-logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.auth-brand-logo span { color: #ffcda8; }
+
+.auth-brand-copy h1 {
+  color: #fff;
+  font-size: var(--fs-display-md);
+  max-width: 20ch;
+}
+.auth-brand-copy p {
+  color: rgba(255, 255, 255, 0.78);
+  max-width: 38ch;
+  font-size: var(--fs-body-lg);
+}
+
+.auth-journey {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+.auth-journey-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--fs-body-sm);
+  color: rgba(255, 255, 255, 0.9);
+}
+.auth-journey-step .trail-node {
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+.auth-journey .trail-line { border-color: rgba(255, 255, 255, 0.35); margin-left: 12px; height: 20px; border-top: none; border-left: 2px dotted rgba(255,255,255,0.35); width: 0; flex: 0 0 auto; }
+.auth-journey-row { display: flex; flex-direction: column; }
+
+.auth-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl) var(--space-lg);
+}
+.auth-form-wrap { width: 100%; max-width: 420px; }
+.auth-form-wrap h2 { margin-bottom: var(--space-xs); }
+.auth-form-wrap .subhead { margin-bottom: var(--space-lg); }
+.auth-switch { text-align: center; margin-top: var(--space-lg); font-size: var(--fs-body-sm); color: var(--color-ink-soft); }
+.auth-switch a { font-weight: 700; }
+
+.recaptcha-note {
+  font-size: var(--fs-caption);
+  color: var(--color-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+@media (max-width: 880px) {
+  .auth-shell { grid-template-columns: 1fr; }
+  .auth-brand { display: none; }
+  .auth-form-side { padding: var(--space-lg) var(--space-md); }
+}

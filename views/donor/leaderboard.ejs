@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Leaderboard' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>Top Donors</h1>
+      <p class="muted">Ranked by leaderboard score — earned through donation count, with a bonus for urgent donations.</p>
+    </div>
+
+    <div class="card" style="padding:0; overflow:hidden;">
+      <table class="lb-table">
+        <thead>
+          <tr><th>Rank</th><th>Donor</th><th>Type</th><th>Donations</th><th>Score</th></tr>
+        </thead>
+        <tbody>
+          <% topDonors.forEach((d, i) => { %>
+            <tr class="<%= d._id.toString() === currentUserId ? 'lb-row-me' : '' %>">
+              <td>#<%= i + 1 %></td>
+              <td><%= d.name %><% if (d._id.toString() === currentUserId) { %> <span class="muted">(you)</span><% } %></td>
+              <td style="text-transform:capitalize;"><%= d.organizationName || d.donorType %></td>
+              <td><%= d.totalDonations %></td>
+              <td><strong><%= d.leaderboardScore %></strong></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="mt-lg">Badge Ladder</h2>
+    <div class="badge-grid">
+      <% allBadges.forEach(b => { %>
+        <div class="badge-chip"><span class="badge-icon"><%= b.icon %></span> <%= b.name %> <span class="muted">(<%= b.threshold %>+)</span></div>
+      <% }) %>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th, .lb-table td { padding: var(--space-sm) var(--space-md); text-align: left; font-size: var(--fs-body-sm); }
+    .lb-table thead { background: var(--color-surface-alt); }
+    .lb-table tbody tr { border-top: 1px solid var(--color-border); }
+    .lb-row-me { background: var(--color-primary-tint); font-weight: 600; }
+    .badge-grid { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+    .badge-chip { display: flex; align-items: center; gap: var(--space-xs); background: var(--color-surface); border: 1px solid var(--color-border); padding: 0.4em 0.8em; border-radius: var(--radius-full); font-size: var(--fs-body-sm); font-weight: 600; }
+    .badge-icon { font-size: 1.1em; }
+  </style>
+</body>
+</html>

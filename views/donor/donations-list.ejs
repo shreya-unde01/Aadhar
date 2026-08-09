@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'My Donations' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>My Donations</h1>
+      <p class="muted">Track every donation you've made, from submission to delivery.</p>
+    </div>
+
+    <% if (justCreated) { %>
+      <div class="alert alert-success"><%= justCreated %> donation<%= justCreated > 1 ? 's' : '' %> submitted successfully.</div>
+    <% } %>
+
+    <div class="filter-tabs">
+      <a href="/donor/donations" class="filter-tab <%= activeStatus === 'all' ? 'active' : '' %>">All</a>
+      <% statuses.forEach(s => { %>
+        <a href="/donor/donations?status=<%= s %>" class="filter-tab <%= activeStatus === s ? 'active' : '' %>" style="text-transform:capitalize;"><%= s %></a>
+      <% }) %>
+    </div>
+
+    <% if (donations.length === 0) { %>
+      <div class="card text-center">
+        <p class="mb-0 muted">No donations found for this filter.</p>
+      </div>
+    <% } else { %>
+      <div class="donation-cards">
+        <% donations.forEach(d => { %>
+          <a href="/donor/donations/<%= d._id %>" class="card donation-card">
+            <div>
+              <div class="section-heading" style="margin-bottom: var(--space-xs);">
+                <strong style="text-transform:capitalize;"><%= d.type %></strong>
+                <span class="pill pill-<%= d.status %>"><%= d.status %></span>
+              </div>
+              <p class="muted mb-0"><%= d.quantity %> <%= d.unit || '' %> · <%= d.donationCode %></p>
+              <p class="muted mb-0" style="font-size: var(--fs-caption);">
+                Pickup: <%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–<%= d.timeSlot.endTime %>
+                <% if (d.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
+              </p>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .filter-tabs { display: flex; gap: var(--space-xs); flex-wrap: wrap; margin-bottom: var(--space-lg); }
+    .filter-tab { padding: 0.4em 1em; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink-soft); }
+    .filter-tab.active, .filter-tab:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-tint); }
+    .donation-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+    .donation-card { color: var(--color-ink); transition: box-shadow var(--transition-fast), transform var(--transition-fast); }
+    .donation-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  </style>
+</body>
+</html>

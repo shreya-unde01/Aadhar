@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Confirm Delivery' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Confirm Delivery</h1>
+      <p class="muted">
+        <%= task.donationId.donationCode %> · <span style="text-transform:capitalize;"><%= task.donationId.type %></span>
+        · Delivering to <%= task.deliveryLocation.address %>
+      </p>
+    </div>
+
+    <% if (errors) { %>
+      <div class="alert alert-error"><% errors.forEach(e => { %><p class="mb-0"><%= e %></p><% }) %></div>
+    <% } %>
+
+    <form method="POST" action="/volunteer/tasks/<%= task._id %>/deliver" enctype="multipart/form-data" class="card">
+      <h2>Delivery OTP</h2>
+      <p class="hint">Ask the recipient (or check with the NGO) for the code generated when this task was assigned, then enter it below to confirm the handoff.</p>
+      <div class="field">
+        <label for="otp">OTP</label>
+        <input type="text" name="otp" id="otp" inputmode="numeric" maxlength="6" placeholder="6-digit code" required>
+      </div>
+
+      <hr class="divider">
+
+      <h2>Recipient Feedback</h2>
+      <p class="hint">Collected on behalf of the recipient at the point of delivery.</p>
+
+      <div class="field">
+        <label>Rating</label>
+        <div class="star-picker">
+          <% [1,2,3,4,5].forEach(n => { %>
+            <label class="star-option">
+              <input type="radio" name="rating" value="<%= n %>" <%= formData.rating == n ? 'checked' : '' %> required>
+              <span><%= n %>⭐</span>
+            </label>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="category">Category</label>
+        <select name="category" id="category" required>
+          <option value="" disabled <%= !formData.category ? 'selected' : '' %>>Choose one</option>
+          <option value="good" <%= formData.category === 'good' ? 'selected' : '' %>>Good</option>
+          <option value="average" <%= formData.category === 'average' ? 'selected' : '' %>>Average</option>
+          <option value="bad" <%= formData.category === 'bad' ? 'selected' : '' %>>Bad</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="comment">Comment <span class="muted">(optional)</span></label>
+        <textarea name="comment" id="comment" rows="2" placeholder="Anything the recipient wanted to share"><%= formData.comment || '' %></textarea>
+      </div>
+
+      <div class="field">
+        <label for="proofPhoto">Delivery Proof Photo</label>
+        <input type="file" name="proofPhoto" id="proofPhoto" accept="image/jpeg,image/png" required>
+        <p class="hint">JPG or PNG, up to 5MB.</p>
+      </div>
+
+      <div class="field">
+        <label for="voiceNote">Voice Note <span class="muted">(optional)</span></label>
+        <input type="file" name="voiceNote" id="voiceNote" accept="audio/*">
+        <p class="hint">MP3, WAV, or WebM, up to 5MB.</p>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block mt-lg">Confirm Delivery</button>
+    </form>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 640px; margin: 0 auto; }
+    .divider { border: none; border-top: 1px solid var(--color-border); margin: var(--space-md) 0; }
+    .star-picker { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+    .star-option { border: 1.5px solid var(--color-border); border-radius: var(--radius-md); padding: 0.5em 0.9em; cursor: pointer; font-size: var(--fs-body-sm); font-weight: 600; }
+    .star-option:has(input:checked) { border-color: var(--color-primary); background: var(--color-primary-tint); }
+    .star-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+  </style>
+</body>
+</html>

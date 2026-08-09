@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Pending Approval' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container" style="padding: var(--space-2xl) 0; text-align:center;">
+    <span class="pill pill-pending">Awaiting approval</span>
+    <h1 class="mt-lg">Thanks for signing up, <%= currentUser.name %>!</h1>
+    <p class="muted" style="max-width: 46ch; margin: 0 auto;">
+      An administrator needs to review and approve your volunteer
+      account before you can accept tasks. We'll let you know as soon
+      as you're approved.
+    </p>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

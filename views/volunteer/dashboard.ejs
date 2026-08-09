@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Volunteer Dashboard' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container donor-dash">
+
+    <div class="donor-dash-header">
+      <div>
+        <h1>Welcome, <%= currentUser.name %> 👋</h1>
+        <p class="muted mb-0">
+          <% if (currentUser.avgRating > 0) { %>⭐ <%= currentUser.avgRating.toFixed(1) %> (<%= currentUser.ratingCount %> ratings) · <% } %>
+          <%= currentUser.completedTasks %> completed
+        </p>
+      </div>
+      <div class="donor-dash-actions">
+        <a href="/volunteer/feedback" class="btn btn-outline">My Rating History</a>
+      </div>
+    </div>
+
+    <% if (justDelivered) { %>
+      <div class="alert alert-success mt-lg">Delivery confirmed and feedback logged. Thank you! 🎉</div>
+    <% } %>
+
+    <% if (nearbyAlerts.length > 0) { %>
+      <% nearbyAlerts.forEach(a => { %>
+        <div class="alert alert-error mt-lg">
+          🚨 <strong><%= a.title %></strong> — <%= a.area.address || 'nearby' %>.
+          <% if (a.message) { %><%= a.message %><% } %>
+        </div>
+      <% }) %>
+    <% } %>
+
+    <div id="live-emergency-banner" class="alert alert-error mt-lg" style="display:none;"></div>
+    <div id="live-task-banner" class="alert alert-success mt-lg" style="display:none; cursor:pointer;" onclick="location.reload()">
+      🔄 A new task was assigned to you — click to refresh.
+    </div>
+
+    <h2 class="mt-lg">My Tasks</h2>
+    <% if (tasks.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">No tasks assigned right now. New assignments from NGOs will show up here.</p></div>
+    <% } else { %>
+      <div class="donation-cards">
+        <% tasks.forEach(t => { %>
+          <% const d = t.donationId; %>
+          <div class="card task-card">
+            <div class="section-heading" style="margin-bottom: var(--space-xs);">
+              <strong style="text-transform:capitalize;"><%= d.type %></strong>
+              <span class="pill pill-<%= t.status === 'picked' ? 'picked' : 'assigned' %>"><%= t.status %></span>
+            </div>
+            <p class="muted mb-0"><%= d.quantity %> <%= d.unit || '' %> · <%= d.donationCode %>
+              <% if (d.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
+            </p>
+            <dl class="detail-list mt-sm">
+              <dt>Pickup</dt><dd><%= t.pickupLocation.address %></dd>
+              <dt>Delivery</dt><dd><%= t.deliveryLocation.address %></dd>
+              <dt>Time Slot</dt><dd><%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–<%= d.timeSlot.endTime %></dd>
+            </dl>
+
+            <% if (mapsEnabled) { %>
+              <iframe
+                class="map-embed mt-sm"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed/v1/directions?key=<%= googleMapsApiKey %>&origin=<%= encodeURIComponent(t.pickupLocation.address) %>&destination=<%= encodeURIComponent(t.deliveryLocation.address) %>"
+              ></iframe>
+            <% } %>
+
+            <a
+              class="btn btn-outline btn-sm mt-sm"
+              target="_blank" rel="noopener"
+              href="https://www.google.com/maps/dir/?api=1&origin=<%= encodeURIComponent(t.pickupLocation.address) %>&destination=<%= encodeURIComponent(t.deliveryLocation.address) %>"
+            >🗺️ Open in Google Maps</a>
+
+            <div class="row-actions mt-md">
+              <% if (t.status === 'assigned') { %>
+                <form method="POST" action="/volunteer/tasks/<%= t._id %>/accept" class="inline-form"><button class="btn btn-primary btn-sm">Accept</button></form>
+                <form method="POST" action="/volunteer/tasks/<%= t._id %>/reject" class="inline-form"><button class="btn btn-outline btn-sm">Reject</button></form>
+              <% } else if (t.status === 'accepted') { %>
+                <form method="POST" action="/volunteer/tasks/<%= t._id %>/picked" class="inline-form"><button class="btn btn-primary btn-sm">Mark Picked Up</button></form>
+                <form method="POST" action="/volunteer/tasks/<%= t._id %>/reject" class="inline-form"><button class="btn btn-outline btn-sm">Reject</button></form>
+              <% } else if (t.status === 'picked') { %>
+                <a href="/volunteer/tasks/<%= t._id %>/deliver" class="btn btn-primary btn-sm">Confirm Delivery</a>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .donor-dash { padding: var(--space-xl) 0; }
+    .donor-dash-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .donation-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-md); }
+    .task-card { display: flex; flex-direction: column; }
+    .detail-list { display: grid; grid-template-columns: auto 1fr; gap: var(--space-xs) var(--space-sm); margin: 0; font-size: var(--fs-body-sm); }
+    .detail-list dt { color: var(--color-muted); }
+    .detail-list dd { margin: 0; }
+    .row-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-top: auto; }
+    .mt-sm { margin-top: var(--space-sm); }
+    .mt-md { margin-top: var(--space-md); }
+    .map-embed { width: 100%; height: 180px; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+  </style>
+  <script>
+    (function () {
+      if (!window.aadharSocket) return;
+
+      window.aadharSocket.on('task:new', function () {
+        document.getElementById('live-task-banner').style.display = 'block';
+      });
+
+      window.aadharSocket.on('emergency:new', function (payload) {
+        var banner = document.getElementById('live-emergency-banner');
+        banner.textContent = '';
+        var strong = document.createElement('strong');
+        strong.textContent = '🚨 ' + payload.title;
+        banner.appendChild(strong);
+        if (payload.address) banner.appendChild(document.createTextNode(' — ' + payload.address));
+        if (payload.message) banner.appendChild(document.createTextNode('. ' + payload.message));
+        banner.style.display = 'block';
+      });
+    })();
+  </script>
+</body>
+</html>

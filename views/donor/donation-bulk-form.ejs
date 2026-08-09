@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Bulk Donation' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Bulk Donation</h1>
+      <p class="muted">For hotels and events donating several items at once. Add as many rows as you need — they'll share one pickup address and time slot but get their own tracking codes.</p>
+    </div>
+
+    <% if (errors) { %>
+      <div class="alert alert-error">
+        <ul style="margin:0; padding-left: 1.1em;">
+          <% errors.forEach(e => { %><li><%= e %></li><% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/donor/donations/bulk" class="card" id="bulk-form">
+
+      <h3>Shared Pickup Details</h3>
+      <div class="field">
+        <label for="address">Pickup Address</label>
+        <input type="text" name="address" id="address" placeholder="Full pickup address" required>
+        <% if (!mapsEnabled) { %>
+          <p class="hint">📍 Add a Google Maps API key in <code>.env</code> to enable the map picker.</p>
+        <% } else { %>
+          <p class="hint">📍 Start typing to search, or drag the pin to fine-tune.</p>
+        <% } %>
+      </div>
+      <input type="hidden" name="lat" id="lat">
+      <input type="hidden" name="lng" id="lng">
+      <% if (mapsEnabled) { %>
+        <div id="pickup-map" class="map-picker"></div>
+      <% } %>
+      <div class="field-row">
+        <div class="field">
+          <label for="date">Pickup Date</label>
+          <input type="date" name="date" id="date" required>
+        </div>
+        <div class="field">
+          <label for="startTime">From</label>
+          <input type="time" name="startTime" id="startTime" required>
+        </div>
+        <div class="field">
+          <label for="endTime">To</label>
+          <input type="time" name="endTime" id="endTime" required>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="section-heading">
+        <h3 style="margin:0;">Items</h3>
+        <button type="button" class="btn btn-outline btn-sm" id="add-item">+ Add Item</button>
+      </div>
+      <div id="items-container"></div>
+
+      <input type="hidden" name="itemsJson" id="itemsJson">
+      <button type="submit" class="btn btn-primary btn-block mt-lg">Submit Bulk Donation</button>
+    </form>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 780px; margin: 0 auto; }
+    .form-page-head { margin-bottom: var(--space-lg); }
+    .divider { border: none; border-top: 1px solid var(--color-border); margin: var(--space-md) 0; }
+    .bulk-item { border: 1.5px dashed var(--color-border); border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md); position: relative; }
+    .bulk-item-remove { position: absolute; top: var(--space-sm); right: var(--space-sm); background: none; border: none; color: var(--color-danger); font-weight: 700; cursor: pointer; font-size: var(--fs-body-sm); }
+    .checkbox-field { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--fs-body-sm); font-weight: 600; }
+    .checkbox-field input { width: auto; }
+    .map-picker { height: 260px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-border); margin-top: var(--space-sm); }
+  </style>
+  <script src="/js/donor-bulk.js"></script>
+  <% if (mapsEnabled) { %>
+    <script src="/js/maps-picker.js"></script>
+    <script>
+      window.__initPickupMap = function () {
+        initAadharMapPicker({ addressInputId: 'address', latInputId: 'lat', lngInputId: 'lng', mapDivId: 'pickup-map' });
+      };
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= googleMapsApiKey %>&libraries=places&callback=__initPickupMap" async defer></script>
+  <% } %>
+</body>
+</html>

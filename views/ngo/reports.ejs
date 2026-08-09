@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Reports' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>Reports</h1>
+      <p class="muted">Impact totals, updated automatically whenever a donation is marked delivered — not recalculated on every page load.</p>
+    </div>
+
+    <div class="stat-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="stat-card"><span class="stat-value"><%= totals.donationsDelivered %></span><span class="stat-label">Donations Delivered</span></div>
+      <div class="stat-card"><span class="stat-value"><%= totals.mealsDelivered %></span><span class="stat-label">Meals Delivered (30d)</span></div>
+      <div class="stat-card"><span class="stat-value"><%= totals.itemsDistributed %></span><span class="stat-label">Items Distributed (30d)</span></div>
+      <div class="stat-card"><span class="stat-value">~<%= totals.wasteReducedKg %> kg</span><span class="stat-label">Waste Reduced (est.)</span></div>
+    </div>
+
+    <h2 class="mt-lg">Daily Breakdown</h2>
+    <% if (last30.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">No deliveries recorded yet — reports populate once donations start reaching "delivered" status.</p></div>
+    <% } else { %>
+      <div class="card" style="padding:0; overflow-x:auto;">
+        <table class="lb-table">
+          <thead>
+            <tr><th>Date</th><th>Delivered</th><th>Meals</th><th>Items</th><th>Money (₹)</th><th>Skill Hrs</th></tr>
+          </thead>
+          <tbody>
+            <% last30.forEach(r => { %>
+              <tr>
+                <td><%= r.date %></td>
+                <td><%= r.donationsDelivered %></td>
+                <td><%= r.mealsDelivered %></td>
+                <td><%= r.itemsDistributed %></td>
+                <td><%= r.moneyRaised %></td>
+                <td><%= r.skillHoursOffered %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .stat-grid { display: grid; gap: var(--space-md); }
+    .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); text-align: center; }
+    .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
+    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); }
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th, .lb-table td { padding: var(--space-sm) var(--space-md); text-align: left; font-size: var(--fs-body-sm); }
+    .lb-table thead { background: var(--color-surface-alt); }
+    .lb-table tbody tr { border-top: 1px solid var(--color-border); }
+    @media (max-width: 860px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</body>
+</html>

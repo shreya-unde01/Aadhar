@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Lions Club Admin Dashboard' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container ngo-dash">
+
+    <div class="donor-dash-header">
+      <div>
+        <h1>Welcome, <%= currentUser.name %> 👋</h1>
+        <p class="muted mb-0"><%= currentUser.organizationName %></p>
+      </div>
+      <div class="donor-dash-actions" id="dash-actions">
+        <% if (stats.pendingApprovals > 0) { %>
+          <a href="/admin/volunteers?tab=pending" class="btn btn-outline" id="pending-approvals-btn">👥 <%= stats.pendingApprovals %> pending approval<%= stats.pendingApprovals > 1 ? 's' : '' %></a>
+        <% } %>
+        <% if (stats.activeAlerts > 0) { %>
+          <a href="/admin/emergency" class="btn" style="background: var(--color-danger); color:#fff;">🚨 <%= stats.activeAlerts %> active alert<%= stats.activeAlerts > 1 ? 's' : '' %></a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="stat-grid mt-lg" style="grid-template-columns: repeat(4, 1fr);">
+      <a href="/admin/donations" class="stat-card">
+        <span class="stat-value" id="stat-total"><%= stats.totalDonations %></span>
+        <span class="stat-label">Total Donations</span>
+      </a>
+      <a href="/admin/volunteers?tab=active" class="stat-card">
+        <span class="stat-value"><%= stats.activeVolunteers %></span>
+        <span class="stat-label">Active Volunteers</span>
+      </a>
+      <a href="/admin/donations?status=pending" class="stat-card">
+        <span class="stat-value" id="stat-pending"><%= stats.pendingPickups %></span>
+        <span class="stat-label">Pending Pickups</span>
+      </a>
+      <a href="/admin/donations?status=delivered" class="stat-card">
+        <span class="stat-value"><%= stats.completedDeliveries %></span>
+        <span class="stat-label">Delivered</span>
+      </a>
+    </div>
+
+    <div class="quick-links mt-lg">
+      <a href="/admin/donations" class="card quick-link">📦 Manage Donations</a>
+      <a href="/admin/volunteers" class="card quick-link">🧑‍🤝‍🧑 Manage Volunteers</a>
+      <a href="/admin/logistics" class="card quick-link">🗺️ Logistics</a>
+      <a href="/admin/track" class="card quick-link">🔍 Track a Donation</a>
+      <a href="/admin/reports" class="card quick-link">📊 Reports</a>
+      <a href="/admin/emergency" class="card quick-link">🚨 Emergency Mode</a>
+    </div>
+
+    <section class="card mt-lg">
+      <div class="section-heading">
+        <h2>Recent Donations</h2>
+        <a href="/admin/donations" class="link-more">View all →</a>
+      </div>
+      <% if (recentDonations.length === 0) { %>
+        <p class="muted mb-0">No donations yet.</p>
+      <% } else { %>
+        <ul class="donation-rows">
+          <% recentDonations.forEach(d => { %>
+            <li>
+              <a href="/admin/donations/<%= d._id %>/assign" class="donation-row">
+                <div>
+                  <strong style="text-transform:capitalize;"><%= d.type %></strong>
+                  <span class="muted"> · <%= d.quantity %> <%= d.unit || '' %> · by <%= d.donorId ? d.donorId.name : 'Unknown' %></span>
+                  <div class="muted" style="font-size: var(--fs-caption);"><%= d.donationCode %><% if (d.urgent) { %> · <span style="color:var(--color-danger); font-weight:700;">URGENT</span><% } %></div>
+                </div>
+                <span class="pill pill-<%= d.status %>"><%= d.status %></span>
+              </a>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </section>
+
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .ngo-dash { padding: var(--space-xl) 0; }
+    .donor-dash-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .donor-dash-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
+    .stat-grid { display: grid; gap: var(--space-md); }
+    .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); text-align: center; color: var(--color-ink); transition: box-shadow var(--transition-fast); }
+    .stat-card:hover { box-shadow: var(--shadow-md); }
+    .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
+    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); }
+    .quick-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
+    .quick-link { color: var(--color-ink); font-weight: 600; text-align: center; padding: var(--space-md); transition: box-shadow var(--transition-fast), transform var(--transition-fast); }
+    .quick-link:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+    .link-more { font-size: var(--fs-body-sm); font-weight: 600; }
+    .donation-rows li { border-top: 1px solid var(--color-border); }
+    .donation-rows li:first-child { border-top: none; }
+    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; color: var(--color-ink); }
+    @media (max-width: 860px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .quick-links { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+  <script>
+    (function () {
+      if (!window.aadharSocket) return;
+      var totalEl = document.getElementById('stat-total');
+      var pendingEl = document.getElementById('stat-pending');
+
+      window.aadharSocket.on('donation:new', function () {
+        if (totalEl) totalEl.textContent = Number(totalEl.textContent) + 1;
+        if (pendingEl) pendingEl.textContent = Number(pendingEl.textContent) + 1;
+      });
+
+      window.aadharSocket.on('volunteer:new', function () {
+        var btn = document.getElementById('pending-approvals-btn');
+        if (btn) {
+          var count = parseInt(btn.textContent, 10) || 0;
+          count += 1;
+          btn.textContent = '👥 ' + count + ' pending approval' + (count > 1 ? 's' : '');
+        } else {
+          var actions = document.getElementById('dash-actions');
+          var link = document.createElement('a');
+          link.href = '/admin/volunteers?tab=pending';
+          link.className = 'btn btn-outline';
+          link.id = 'pending-approvals-btn';
+          link.textContent = '👥 1 pending approval';
+          actions.prepend(link);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Sign Up', extraCss: ['/css/auth.css'] }) %>
+<body>
+  <div class="auth-shell">
+    <aside class="auth-brand">
+      <div class="auth-brand-header">
+        <img src="/images/logo.svg" alt="AADHAR logo" class="auth-brand-logo-image" />
+        <div class="auth-brand-logo">AADHAR <span>— The Soul Serves</span></div>
+      </div>
+      <div class="auth-brand-copy">
+        <h1>Every account starts a new trail.</h1>
+        <p>Whether you're giving, delivering, or coordinating — your first donation's journey begins the moment you sign up.</p>
+        <div class="auth-journey">
+          <div class="auth-journey-row">
+            <div class="auth-journey-step"><span class="trail-node">1</span> Choose your role</div>
+            <div class="trail-line"></div>
+          </div>
+          <div class="auth-journey-row">
+            <div class="auth-journey-step"><span class="trail-node">2</span> Tell us who you are</div>
+            <div class="trail-line"></div>
+          </div>
+          <div class="auth-journey-row">
+            <div class="auth-journey-step"><span class="trail-node">3</span> Start making impact</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </aside>
+
+    <main class="auth-form-side">
+      <div class="auth-form-wrap">
+        <h2>Create your account</h2>
+        <p class="subhead muted">Join as a donor or volunteer.</p>
+
+        <% if (errors && errors.length) { %>
+          <div class="alert alert-error">
+            <% errors.forEach(function(e) { %><div><%= e %></div><% }) %>
+          </div>
+        <% } %>
+
+        <form action="/signup" method="POST" novalidate id="signup-form">
+          <div class="field">
+            <label>I am signing up as a...</label>
+            <div class="role-picker">
+              <label class="role-option">
+                <input type="radio" name="role" value="donor" <%= (!formData || !formData.role || formData.role === 'donor') ? 'checked' : '' %> />
+                Donor
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="volunteer" <%= formData && formData.role === 'volunteer' ? 'checked' : '' %> />
+                Volunteer
+              </label>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="name">Full name</label>
+              <input type="text" id="name" name="name" required value="<%= formData && formData.name ? formData.name : '' %>" />
+            </div>
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" placeholder="10-digit number" value="<%= formData && formData.phone ? formData.phone : '' %>" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" required value="<%= formData && formData.email ? formData.email : '' %>" autocomplete="email" />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required minlength="8" autocomplete="new-password" />
+            <div class="hint">At least 8 characters, including one number.</div>
+          </div>
+
+          <!-- Donor-specific fields -->
+          <div class="field role-specific" data-role="donor">
+            <label for="donorType">Donor type</label>
+            <select id="donorType" name="donorType">
+              <option value="individual">Individual</option>
+              <option value="hotel">Hotel</option>
+              <option value="business">Business</option>
+            </select>
+          </div>
+          <div class="field role-specific" data-role="donor" data-donor-type="hotel,business">
+            <label for="organizationNameDonor">Organization name</label>
+            <input type="text" id="organizationNameDonor" name="organizationName" value="<%= formData && formData.organizationName ? formData.organizationName : '' %>" />
+          </div>
+
+          <!-- Volunteers are automatically connected to the Lions Club. -->
+          <div class="field role-specific" data-role="volunteer">
+            <label>Lions Club</label>
+            <div class="hint">Your volunteer account will be connected to Lions Club for approval and task assignment.</div>
+          </div>
+          <div class="field role-specific" data-role="volunteer">
+            <label for="skills">Skills you can offer (optional)</label>
+            <input type="text" id="skills" name="skills" placeholder="e.g. tutoring, cooking, driving" value="<%= formData && formData.skills ? formData.skills : '' %>" />
+            <div class="hint">Comma-separated. Used for the skill-volunteering module.</div>
+          </div>
+
+          <div class="recaptcha-note">
+            reCAPTCHA is wired up server-side; the widget will appear here once <code>RECAPTCHA_SITE_KEY</code> is set in <code>.env</code>.
+          </div>
+          <% if (recaptchaSiteKey && recaptchaSiteKey !== 'your_recaptcha_site_key_here') { %>
+            <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+          <% } %>
+
+          <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        </form>
+
+        <div class="auth-switch">
+          Already have an account? <a href="/login">Log in</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <% if (recaptchaSiteKey && recaptchaSiteKey !== 'your_recaptcha_site_key_here') { %>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <% } %>
+  <script src="/js/signup.js"></script>
+</body>
+</html>

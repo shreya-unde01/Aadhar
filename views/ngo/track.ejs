@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Track a Donation' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Track a Donation</h1>
+      <p class="muted">Look up any donation in the system by its tracking code — part of the transparency system.</p>
+    </div>
+
+    <form method="GET" action="/admin/track" class="card">
+      <div class="field-row" style="align-items:end;">
+        <div class="field" style="margin-bottom:0;">
+          <label for="code">Tracking Code</label>
+          <input type="text" name="code" id="code" value="<%= code %>" placeholder="AAD-2026-XXXXXX" style="text-transform:uppercase;">
+        </div>
+        <button type="submit" class="btn btn-primary">Search</button>
+      </div>
+    </form>
+
+    <% if (notFound) { %>
+      <div class="alert alert-error mt-lg">No donation found with code "<%= code %>".</div>
+    <% } %>
+
+    <% if (donation) { %>
+      <section class="card mt-lg">
+        <div class="section-heading">
+          <h2 style="margin-bottom:0;"><%= donation.donationCode %></h2>
+          <span class="pill pill-<%= donation.status %>"><%= donation.status %></span>
+        </div>
+        <dl class="detail-list mt-lg">
+          <dt>Type</dt><dd style="text-transform:capitalize;"><%= donation.type %></dd>
+          <dt>Quantity</dt><dd><%= donation.quantity %> <%= donation.unit || '' %></dd>
+          <dt>Donor</dt><dd><%= donation.donorId ? donation.donorId.name : '—' %></dd>
+          <dt>Pickup</dt><dd><%= donation.pickupLocation.address %></dd>
+          <% if (donation.assignedVolunteerId) { %>
+            <dt>Volunteer</dt><dd><%= donation.assignedVolunteerId.name %> · <%= donation.assignedVolunteerId.phone %></dd>
+          <% } %>
+        </dl>
+
+        <h3 class="mt-lg" style="font-size: var(--fs-body-lg);">History</h3>
+        <ul class="history-list">
+          <% donation.statusHistory.slice().reverse().forEach(h => { %>
+            <li>
+              <span class="pill pill-<%= h.status %>" style="text-transform:capitalize;"><%= h.status %></span>
+              <span class="muted" style="font-size: var(--fs-body-sm);"><%= new Date(h.changedAt).toLocaleString() %></span>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 720px; margin: 0 auto; }
+    .detail-list { display: grid; grid-template-columns: auto 1fr; gap: var(--space-xs) var(--space-md); margin: 0; }
+    .detail-list dt { color: var(--color-muted); font-size: var(--fs-body-sm); }
+    .detail-list dd { margin: 0; }
+    .history-list li { border-top: 1px solid var(--color-border); padding: var(--space-sm) 0; }
+    .history-list li:first-child { border-top: none; padding-top: 0; }
+  </style>
+</body>
+</html>

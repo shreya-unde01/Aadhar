@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'My Rating History' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>My Rating History</h1>
+      <p class="muted">
+        <% if (volunteer.avgRating > 0) { %>
+          ⭐ <%= volunteer.avgRating.toFixed(1) %> average across <%= volunteer.ratingCount %> deliveries.
+        <% } else { %>
+          No ratings yet — they'll appear here after your first confirmed delivery.
+        <% } %>
+      </p>
+    </div>
+
+    <% if (feedbackList.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">Nothing here yet.</p></div>
+    <% } else { %>
+      <div class="donation-cards">
+        <% feedbackList.forEach(f => { %>
+          <div class="card">
+            <div class="section-heading" style="margin-bottom: var(--space-xs);">
+              <strong style="text-transform:capitalize;"><%= f.donationId ? f.donationId.type : '—' %> · <%= f.donationId ? f.donationId.donationCode : '' %></strong>
+              <span class="pill pill-<%= f.category === 'good' ? 'delivered' : (f.category === 'bad' ? 'cancelled' : 'assigned') %>"><%= f.category %></span>
+            </div>
+            <p class="mb-0"><%= '⭐'.repeat(f.rating) %></p>
+            <% if (f.comment) { %><p class="mb-0"><%= f.comment %></p><% } %>
+            <p class="muted mb-0" style="font-size: var(--fs-caption);"><%= new Date(f.createdAt).toLocaleDateString() %></p>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .donation-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+  </style>
+</body>
+</html>

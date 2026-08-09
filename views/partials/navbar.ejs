@@ -1,0 +1,49 @@
+<header class="site-navbar">
+  <div class="container site-navbar-inner">
+    <a href="/" class="site-navbar-logo">
+      <img src="/images/logo.svg" alt="Lions Club logo" class="site-navbar-logo-image" />
+      <span class="site-navbar-logo-text">Lions Club <span>— The Soul Serves</span></span>
+    </a>
+    <nav class="site-navbar-links">
+      <a href="/impact">Impact</a>
+      <% if (typeof currentUser !== 'undefined' && currentUser) { %>
+        <% const roleHome = currentUser.role === 'ngo_admin' ? '/admin/dashboard' : '/' + currentUser.role + '/dashboard'; %>
+        <a href="<%= roleHome %>">Dashboard</a>
+        <% if (currentUser.role === 'donor') { %>
+          <a href="/donor/donations/new">Donate</a>
+          <a href="/donor/donations">My Donations</a>
+          <a href="/donor/leaderboard">Leaderboard</a>
+        <% } else if (currentUser.role === 'ngo_admin') { %>
+          <a href="/admin/donations">Donations</a>
+          <a href="/admin/volunteers">Volunteers</a>
+          <a href="/admin/logistics">Logistics</a>
+          <a href="/admin/reports">Reports</a>
+        <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
+          <a href="/volunteer/feedback">My Ratings</a>
+        <% } %>
+        <span class="site-navbar-user"><%= currentUser.name %></span>
+        <form action="/logout" method="POST" class="inline-form">
+          <button type="submit" class="btn btn-outline btn-sm">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Log in</a>
+        <a href="/admin/login">Admin login</a>
+        <a href="/signup" class="btn btn-primary btn-sm">Get started</a>
+      <% } %>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-navbar { border-bottom: 1px solid var(--color-border); background: var(--color-surface); position: sticky; top: 0; z-index: 20; }
+  .site-navbar-inner { display: flex; align-items: center; justify-content: space-between; padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
+  .site-navbar-logo { display: inline-flex; align-items: center; gap: var(--space-sm); font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--color-ink); }
+  .site-navbar-logo-image { width: 42px; height: 42px; object-fit: contain; flex: 0 0 auto; }
+  .site-navbar-logo-text { display: inline-flex; align-items: baseline; gap: 0.35rem; }
+  .site-navbar-logo-text span { color: var(--color-muted); font-weight: 500; font-size: 0.85rem; }
+  .site-navbar-links { display: flex; align-items: center; gap: var(--space-md); font-size: var(--fs-body-sm); font-weight: 600; }
+  .site-navbar-links a { color: var(--color-ink); }
+  .site-navbar-links a:hover { color: var(--color-primary); }
+  .site-navbar-user { color: var(--color-muted); font-weight: 500; }
+  .inline-form { display: inline; }
+</style>

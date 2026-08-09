@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Log In', extraCss: ['/css/auth.css'] }) %>
+<body>
+  <div class="auth-shell">
+    <aside class="auth-brand">
+      <div class="auth-brand-header">
+        <img src="/images/logo.svg" alt="AADHAR logo" class="auth-brand-logo-image" />
+        <div class="auth-brand-logo">AADHAR <span>— The Soul Serves</span></div>
+      </div>
+      <div class="auth-brand-copy">
+        <h1>Welcome back to the trail of giving.</h1>
+        <p>Sign in to pick up where you left off — whether that's tracking a donation, managing pickups, or delivering hope.</p>
+        <div class="auth-journey">
+          <div class="auth-journey-row">
+            <div class="auth-journey-step"><span class="trail-node">D</span> Donation logged</div>
+            <div class="trail-line"></div>
+          </div>
+          <div class="auth-journey-row">
+            <div class="auth-journey-step"><span class="trail-node">V</span> Volunteer assigned</div>
+            <div class="trail-line"></div>
+          </div>
+          <div class="auth-journey-row">
+            <div class="auth-journey-step"><span class="trail-node">✓</span> Delivered with proof</div>
+          </div>
+        </div>
+      </div>
+      <div></div>
+    </aside>
+
+    <main class="auth-form-side">
+      <div class="auth-form-wrap">
+        <h2><%= adminOnly ? 'Lions Club Admin' : 'Log in' %></h2>
+        <p class="subhead muted"><%= adminOnly ? 'Use the Lions Club administrator credentials to manage the platform.' : 'Enter your credentials to access your dashboard.' %></p>
+
+        <% if (errors && errors.length) { %>
+          <div class="alert alert-error">
+            <% errors.forEach(function(e) { %><div><%= e %></div><% }) %>
+          </div>
+        <% } %>
+
+        <form action="<%= loginAction %>" method="POST" novalidate>
+          <div class="field">
+            <label for="email">Email address</label>
+            <input type="email" id="email" name="email" required value="<%= formData && formData.email ? formData.email : '' %>" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password" />
+          </div>
+
+          <div class="recaptcha-note">
+            reCAPTCHA is wired up server-side; the widget will appear here once <code>RECAPTCHA_SITE_KEY</code> is set in <code>.env</code>.
+          </div>
+          <% if (recaptchaSiteKey && recaptchaSiteKey !== 'your_recaptcha_site_key_here') { %>
+            <div class="g-recaptcha" data-sitekey="<%= recaptchaSiteKey %>"></div>
+          <% } %>
+
+          <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </form>
+
+        <% if (adminOnly) { %>
+          <div class="auth-switch"><a href="/login">Donor or volunteer? Log in here.</a></div>
+        <% } else { %>
+          <div class="auth-switch">New to Lions Club? <a href="/signup">Create an account</a></div>
+        <% } %>
+      </div>
+    </main>
+  </div>
+
+  <% if (recaptchaSiteKey && recaptchaSiteKey !== 'your_recaptcha_site_key_here') { %>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <% } %>
+</body>
+</html>

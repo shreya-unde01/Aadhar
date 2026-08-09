@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Donor Dashboard' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container donor-dash">
+
+    <div class="donor-dash-header">
+      <div>
+        <h1>Welcome back, <%= donor.name %> 👋</h1>
+        <p class="muted mb-0">
+          <span class="pill pill-delivered" style="text-transform:capitalize;"><%= donor.donorType %> donor</span>
+          &nbsp;· Rank <strong>#<%= rank %></strong> on the leaderboard
+        </p>
+      </div>
+      <div class="donor-dash-actions">
+        <a href="/donor/donations/new" class="btn btn-primary">+ Add Donation</a>
+        <a href="/donor/donations/bulk-new" class="btn btn-outline">Bulk Donation</a>
+      </div>
+    </div>
+
+    <div class="stat-grid mt-lg">
+      <div class="stat-card">
+        <span class="stat-value"><%= totalDonations %></span>
+        <span class="stat-label">Total Donations</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value"><%= counts.pending %></span>
+        <span class="stat-label">Pending</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value"><%= counts.assigned + counts.picked %></span>
+        <span class="stat-label">In Progress</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value"><%= counts.delivered %></span>
+        <span class="stat-label">Delivered</span>
+      </div>
+    </div>
+
+    <div class="donor-dash-cols mt-lg">
+      <section class="card">
+        <div class="section-heading">
+          <h2>Recent Donations</h2>
+          <a href="/donor/donations" class="link-more">View all →</a>
+        </div>
+
+        <% if (recentDonations.length === 0) { %>
+          <p class="muted">You haven't made a donation yet. <a href="/donor/donations/new">Start with your first one</a> — it only takes a minute.</p>
+        <% } else { %>
+          <ul class="donation-rows">
+            <% recentDonations.forEach(d => { %>
+              <li>
+                <a href="/donor/donations/<%= d._id %>" class="donation-row">
+                  <div>
+                    <strong style="text-transform:capitalize;"><%= d.type %></strong>
+                    <span class="muted"> · <%= d.quantity %> <%= d.unit || '' %></span>
+                    <div class="muted" style="font-size: var(--fs-caption);"><%= d.donationCode %></div>
+                  </div>
+                  <span class="pill pill-<%= d.status %>"><%= d.status %></span>
+                </a>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </section>
+
+      <section class="card">
+        <div class="section-heading">
+          <h2>Your Badges</h2>
+          <a href="/donor/leaderboard" class="link-more">Leaderboard →</a>
+        </div>
+        <% if (donor.badges.length === 0) { %>
+          <p class="muted">No badges yet — your first donation earns "First Step" 🌱.</p>
+        <% } else { %>
+          <div class="badge-grid">
+            <% donor.badges.forEach(b => { %>
+              <% if (b.badgeId) { %>
+                <div class="badge-chip" title="<%= b.badgeId.description %>">
+                  <span class="badge-icon"><%= b.badgeId.icon %></span>
+                  <span><%= b.badgeId.name %></span>
+                </div>
+              <% } %>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <div class="mt-lg">
+          <div class="section-heading">
+            <h2 style="font-size: var(--fs-body-lg);">Feedback</h2>
+            <a href="/donor/feedback" class="link-more">View →</a>
+          </div>
+          <p class="muted mb-0">See what recipients said about your donations once delivered.</p>
+        </div>
+      </section>
+    </div>
+
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .donor-dash { padding: var(--space-xl) 0; }
+    .donor-dash-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .donor-dash-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
+    .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); text-align: center; }
+    .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
+    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); }
+    .donor-dash-cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-md); align-items: start; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+    .link-more { font-size: var(--fs-body-sm); font-weight: 600; }
+    .donation-rows li { border-top: 1px solid var(--color-border); }
+    .donation-rows li:first-child { border-top: none; }
+    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; color: var(--color-ink); }
+    .badge-grid { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
+    .badge-chip { display: flex; align-items: center; gap: var(--space-xs); background: var(--color-primary-tint); color: var(--color-primary-dark); padding: 0.4em 0.8em; border-radius: var(--radius-full); font-size: var(--fs-body-sm); font-weight: 600; }
+    .badge-icon { font-size: 1.1em; }
+    @media (max-width: 860px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      .donor-dash-cols { grid-template-columns: 1fr; }
+    }
+  </style>
+</body>
+</html>

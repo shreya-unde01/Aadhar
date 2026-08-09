@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: `Donation ${donation.donationCode}` }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container detail-page">
+
+    <% if (justCreated) { %>
+      <div class="alert alert-success">Donation submitted! Save your tracking code: <strong><%= donation.donationCode %></strong></div>
+    <% } %>
+
+    <div class="detail-head">
+      <div>
+        <span class="muted" style="font-size: var(--fs-caption); letter-spacing: 0.04em; text-transform: uppercase;">Tracking Code</span>
+        <h1 style="margin-bottom:0;"><%= donation.donationCode %></h1>
+      </div>
+      <span id="status-pill" class="pill pill-<%= donation.status %>" style="font-size: var(--fs-body-sm); padding: 0.5em 1em;"><%= donation.status %></span>
+    </div>
+    <p id="live-indicator" class="muted" style="font-size: var(--fs-caption); display:none;">🟢 Live — this page updates automatically as your donation moves.</p>
+
+    <% const steps = ['pending', 'assigned', 'picked', 'delivered'];
+       const currentIndex = steps.indexOf(donation.status); %>
+
+    <% if (donation.status === 'cancelled') { %>
+      <div class="alert alert-error" id="cancelled-alert">This donation was cancelled.</div>
+    <% } %>
+    <div class="card mt-lg" id="pipeline-card" style="<%= donation.status === 'cancelled' ? 'display:none;' : '' %>">
+      <div class="pipeline" id="pipeline" data-donation-id="<%= donation._id %>">
+        <% steps.forEach((s, i) => { %>
+          <div class="pipeline-step <%= i <= currentIndex ? 'done' : '' %> <%= i === currentIndex ? 'current' : '' %>" data-step="<%= s %>">
+            <span class="trail-node"></span>
+            <span class="pipeline-label" style="text-transform:capitalize;"><%= s %></span>
+          </div>
+          <% if (i < steps.length - 1) { %><span class="trail-line"></span><% } %>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="detail-cols mt-lg">
+      <section class="card">
+        <h2>Donation Details</h2>
+        <dl class="detail-list">
+          <dt>Type</dt><dd style="text-transform:capitalize;"><%= donation.type %></dd>
+          <dt>Quantity</dt><dd><%= donation.quantity %> <%= donation.unit || '' %></dd>
+          <% if (donation.description) { %><dt>Notes</dt><dd><%= donation.description %></dd><% } %>
+          <dt>Pickup Address</dt><dd><%= donation.pickupLocation.address %></dd>
+          <dt>Time Slot</dt><dd><%= new Date(donation.timeSlot.date).toLocaleDateString() %>, <%= donation.timeSlot.startTime %>–<%= donation.timeSlot.endTime %></dd>
+          <% if (donation.expiryDate) { %><dt>Expires</dt><dd><%= new Date(donation.expiryDate).toLocaleDateString() %></dd><% } %>
+          <% if (donation.urgent) { %><dt>Priority</dt><dd style="color: var(--color-danger); font-weight:700;">Urgent</dd><% } %>
+        </dl>
+
+        <% if (mapsEnabled && donation.pickupLocation.lat != null && donation.pickupLocation.lng != null) { %>
+          <iframe
+            class="map-embed mt-sm"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps/embed/v1/place?key=<%= googleMapsApiKey %>&q=<%= donation.pickupLocation.lat %>,<%= donation.pickupLocation.lng %>&zoom=14"
+          ></iframe>
+        <% } %>
+
+        <% if (donation.assignedVolunteerId) { %>
+          <h3 class="mt-lg" style="font-size: var(--fs-body-lg);">Assigned Volunteer</h3>
+          <p class="mb-0"><%= donation.assignedVolunteerId.name %> · <%= donation.assignedVolunteerId.phone %>
+            <% if (donation.assignedVolunteerId.avgRating) { %> · ⭐ <%= donation.assignedVolunteerId.avgRating.toFixed(1) %><% } %>
+          </p>
+        <% } %>
+
+        <% if (donation.deliveryProofPhoto) { %>
+          <h3 class="mt-lg" style="font-size: var(--fs-body-lg);">Delivery Proof</h3>
+          <img src="<%= donation.deliveryProofPhoto %>" alt="Delivery proof" style="border-radius: var(--radius-md); max-width: 320px;">
+        <% } %>
+      </section>
+
+      <section class="card">
+        <h2>History</h2>
+        <ul class="history-list">
+          <% donation.statusHistory.slice().reverse().forEach(h => { %>
+            <li>
+              <span class="pill pill-<%= h.status %>" style="text-transform:capitalize;"><%= h.status %></span>
+              <span class="muted" style="font-size: var(--fs-body-sm);"><%= new Date(h.changedAt).toLocaleString() %></span>
+              <% if (h.note) { %><p class="mb-0 muted" style="font-size: var(--fs-body-sm);"><%= h.note %></p><% } %>
+            </li>
+          <% }) %>
+        </ul>
+
+        <h2 class="mt-lg">Feedback</h2>
+        <% if (feedback) { %>
+          <p><%= '⭐'.repeat(feedback.rating) %> <span class="muted">(<%= feedback.category %>)</span></p>
+          <% if (feedback.comment) { %><p class="mb-0"><%= feedback.comment %></p><% } %>
+        <% } else { %>
+          <p class="mb-0 muted">No feedback yet — this is collected by the volunteer once the donation is delivered.</p>
+        <% } %>
+      </section>
+    </div>
+
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .detail-page { padding: var(--space-xl) 0; }
+    .detail-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .pipeline { display: flex; align-items: center; }
+    .pipeline-step { display: flex; flex-direction: column; align-items: center; gap: var(--space-xs); color: var(--color-border); flex-shrink: 0; }
+    .pipeline-step.done { color: var(--color-secondary); }
+    .pipeline-step.current { color: var(--color-primary); }
+    .pipeline-step .trail-node { width: 14px; height: 14px; }
+    .pipeline-label { font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink); }
+    .detail-cols { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-md); align-items: start; }
+    .detail-list { display: grid; grid-template-columns: auto 1fr; gap: var(--space-xs) var(--space-md); margin: 0; }
+    .detail-list dt { color: var(--color-muted); font-size: var(--fs-body-sm); }
+    .detail-list dd { margin: 0; }
+    .history-list li { border-top: 1px solid var(--color-border); padding: var(--space-sm) 0; }
+    .history-list li:first-child { border-top: none; padding-top: 0; }
+    .map-embed { width: 100%; height: 220px; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+    @media (max-width: 860px) {
+      .detail-cols { grid-template-columns: 1fr; }
+      .pipeline { flex-wrap: wrap; }
+    }
+  </style>
+  <script>
+    (function () {
+      var pipeline = document.getElementById('pipeline');
+      if (!pipeline || !window.aadharSocket) return;
+
+      var donationId = pipeline.dataset.donationId;
+      var steps = ['pending', 'assigned', 'picked', 'delivered'];
+
+      // No need to join a per-donation room — the server already pushes
+      // every status change for this donor's donations to their user room
+      // (see sockets/index.js emitDonationStatus); we just filter by id here.
+      document.getElementById('live-indicator').style.display = 'block';
+
+      window.aadharSocket.on('donation:status', function (payload) {
+        if (payload.donationId !== donationId) return;
+
+        var pill = document.getElementById('status-pill');
+        pill.textContent = payload.status;
+        pill.className = 'pill pill-' + payload.status;
+
+        if (payload.status === 'cancelled') {
+          document.getElementById('pipeline-card').style.display = 'none';
+          return;
+        }
+
+        var currentIndex = steps.indexOf(payload.status);
+        pipeline.querySelectorAll('.pipeline-step').forEach(function (el) {
+          var stepIndex = steps.indexOf(el.dataset.step);
+          el.classList.toggle('done', stepIndex <= currentIndex);
+          el.classList.toggle('current', stepIndex === currentIndex);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

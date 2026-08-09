@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Emergency Mode' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Emergency Mode</h1>
+      <p class="muted">Mark a geographic area as urgent. Approved volunteers within the radius get an instant priority alert on their dashboard, pushed live via Socket.io.</p>
+    </div>
+
+    <% if (typeof notified !== 'undefined' && notified !== undefined) { %>
+      <div class="alert alert-success">🚨 Alert declared — notified <%= notified %> volunteer<%= notified == 1 ? '' : 's' %> currently in range.</div>
+    <% } %>
+
+    <% if (errors) { %>
+      <div class="alert alert-error"><% errors.forEach(e => { %><p class="mb-0"><%= e %></p><% }) %></div>
+    <% } %>
+
+    <form method="POST" action="/admin/emergency" class="card">
+      <h2>New Alert</h2>
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" name="title" id="title" placeholder="e.g. Flood relief needed — Panchavati" required>
+      </div>
+      <div class="field">
+        <label for="message">Message <span class="muted">(optional)</span></label>
+        <textarea name="message" id="message" rows="2" placeholder="Details volunteers should know"></textarea>
+      </div>
+      <div class="field">
+        <label for="address">Area Label <span class="muted">(optional)</span></label>
+        <input type="text" name="address" id="address" placeholder="e.g. Panchavati, Nashik">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="lat">Latitude</label>
+          <input type="text" name="lat" id="lat" placeholder="e.g. 20.0059" required>
+        </div>
+        <div class="field">
+          <label for="lng">Longitude</label>
+          <input type="text" name="lng" id="lng" placeholder="e.g. 73.7856" required>
+        </div>
+        <div class="field">
+          <label for="radiusKm">Radius (km)</label>
+          <input type="number" name="radiusKm" id="radiusKm" value="5" min="0.5" max="100" step="0.5">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block mt-lg">Declare Emergency</button>
+    </form>
+
+    <h2 class="mt-lg">Alerts</h2>
+    <% if (alerts.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">No emergency alerts yet.</p></div>
+    <% } else { %>
+      <div class="donation-cards">
+        <% alerts.forEach(a => { %>
+          <div class="card">
+            <div class="section-heading" style="margin-bottom: var(--space-xs);">
+              <strong><%= a.title %></strong>
+              <span class="pill <%= a.isActive ? 'pill-cancelled' : 'pill-delivered' %>"><%= a.isActive ? 'Active' : 'Resolved' %></span>
+            </div>
+            <% if (a.message) { %><p class="mb-0"><%= a.message %></p><% } %>
+            <p class="muted mb-0" style="font-size: var(--fs-body-sm);"><%= a.area.address || `${a.area.lat}, ${a.area.lng}` %> · <%= a.area.radiusKm %> km radius</p>
+            <p class="muted" style="font-size: var(--fs-caption);">By <%= a.createdBy ? a.createdBy.name : '—' %> · <%= new Date(a.createdAt).toLocaleString() %></p>
+            <% if (a.isActive) { %>
+              <form method="POST" action="/admin/emergency/<%= a._id %>/resolve" class="inline-form">
+                <button type="submit" class="btn btn-outline btn-sm">Mark Resolved</button>
+              </form>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 780px; margin: 0 auto; }
+    .donation-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-md); }
+  </style>
+</body>
+</html>

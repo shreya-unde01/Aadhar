@@ -1,0 +1,10 @@
+node_modules/
+.env
+uploads/proofs/*
+uploads/profiles/*
+uploads/voicenotes/*
+!uploads/proofs/.gitkeep
+!uploads/profiles/.gitkeep
+!uploads/voicenotes/.gitkeep
+*.log
+.DS_Store

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: volunteer.name }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container detail-page">
+    <div class="detail-head">
+      <div>
+        <h1 style="margin-bottom:0;"><%= volunteer.name %></h1>
+        <p class="muted mb-0"><%= volunteer.email %> · <%= volunteer.phone %></p>
+      </div>
+      <% if (volunteer.avgRating > 0) { %>
+        <span class="pill pill-delivered" style="font-size: var(--fs-body-sm); padding: 0.5em 1em;">⭐ <%= volunteer.avgRating.toFixed(1) %> (<%= volunteer.ratingCount %> ratings)</span>
+      <% } %>
+    </div>
+
+    <div class="stat-grid mt-lg" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="stat-card">
+        <span class="stat-value"><%= volunteer.completedTasks %></span>
+        <span class="stat-label">Completed Tasks</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value"><%= volunteer.isApproved ? 'Approved' : 'Pending' %></span>
+        <span class="stat-label">Status</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value"><%= volunteer.isActive ? 'Active' : 'Inactive' %></span>
+        <span class="stat-label">Availability</span>
+      </div>
+    </div>
+
+    <div class="detail-cols mt-lg">
+      <section class="card">
+        <h2>Task History</h2>
+        <% if (tasks.length === 0) { %>
+          <p class="mb-0 muted">No tasks assigned yet.</p>
+        <% } else { %>
+          <ul class="donation-rows">
+            <% tasks.forEach(t => { %>
+              <li class="donation-row">
+                <div>
+                  <strong><%= t.donationId ? t.donationId.donationCode : '—' %></strong>
+                  <span class="muted"> · <%= t.donationId ? t.donationId.type : '' %></span>
+                </div>
+                <span class="pill pill-<%= t.status === 'delivered' ? 'delivered' : (t.status === 'picked' ? 'picked' : 'assigned') %>"><%= t.status %></span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </section>
+
+      <section class="card">
+        <h2>Feedback Submitted</h2>
+        <% if (feedback.length === 0) { %>
+          <p class="mb-0 muted">No feedback logged yet.</p>
+        <% } else { %>
+          <% feedback.forEach(f => { %>
+            <div class="mb-0" style="border-top: 1px solid var(--color-border); padding: var(--space-sm) 0;">
+              <p class="mb-0"><%= '⭐'.repeat(f.rating) %> <span class="muted">(<%= f.category %>)</span></p>
+              <% if (f.comment) { %><p class="mb-0 muted" style="font-size: var(--fs-body-sm);"><%= f.comment %></p><% } %>
+            </div>
+          <% }) %>
+        <% } %>
+      </section>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .detail-page { padding: var(--space-xl) 0; }
+    .detail-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .stat-grid { display: grid; gap: var(--space-md); }
+    .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); text-align: center; }
+    .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
+    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); }
+    .detail-cols { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); align-items: start; }
+    .donation-rows li { border-top: 1px solid var(--color-border); }
+    .donation-rows li:first-child { border-top: none; }
+    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; }
+    @media (max-width: 860px) { .detail-cols { grid-template-columns: 1fr; } }
+  </style>
+</body>
+</html>

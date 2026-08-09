@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Add Donation' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Add a Donation</h1>
+      <p class="muted">Tell us what you're giving and where to pick it up. You'll get a tracking code once it's submitted.</p>
+    </div>
+
+    <% if (errors) { %>
+      <div class="alert alert-error">
+        <ul style="margin:0; padding-left: 1.1em;">
+          <% errors.forEach(e => { %><li><%= e %></li><% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form method="POST" action="/donor/donations" class="card" id="donation-form">
+      <div class="field">
+        <label>Donation recipient</label>
+        <div class="readonly-input">Lions Club</div>
+      </div>
+
+      <input type="hidden" name="type" value="food">
+      <div class="field-row">
+        <div class="field">
+          <label for="quantity">Quantity</label>
+          <input type="number" min="0.01" step="0.01" name="quantity" id="quantity" value="<%= formData.quantity || '' %>" placeholder="e.g. 20" required>
+        </div>
+        <div class="field">
+          <label for="unit">Unit <span class="muted">(optional)</span></label>
+          <input type="text" name="unit" id="unit" value="<%= formData.unit || '' %>" placeholder="kg, plates, ₹, items…">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="description">Description <span class="muted">(optional)</span></label>
+        <textarea name="description" id="description" rows="2" placeholder="Anything the NGO or volunteer should know"><%= formData.description || '' %></textarea>
+      </div>
+
+      <div class="field" id="expiry-field" style="display:none;">
+        <label for="expiryDate">Expiry Date <span class="muted">(food only)</span></label>
+        <input type="date" name="expiryDate" id="expiryDate" value="<%= formData.expiryDate || '' %>">
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label for="address">Pickup Address</label>
+        <input type="text" name="address" id="address" value="<%= formData.address || '' %>" placeholder="Full pickup address" required>
+        <% if (!mapsEnabled) { %>
+          <p class="hint">📍 Add a Google Maps API key in <code>.env</code> to enable the map picker — for now, just type the address.</p>
+        <% } else { %>
+          <p class="hint">📍 Start typing to search, or drag the pin to fine-tune the exact pickup point.</p>
+        <% } %>
+      </div>
+      <input type="hidden" name="lat" id="lat" value="<%= formData.lat || '' %>">
+      <input type="hidden" name="lng" id="lng" value="<%= formData.lng || '' %>">
+      <% if (mapsEnabled) { %>
+        <div id="pickup-map" class="map-picker"></div>
+      <% } %>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="date">Pickup Date</label>
+          <input type="date" name="date" id="date" value="<%= formData.date || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="startTime">From</label>
+          <input type="time" name="startTime" id="startTime" value="<%= formData.startTime || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="endTime">To</label>
+          <input type="time" name="endTime" id="endTime" value="<%= formData.endTime || '' %>" required>
+        </div>
+      </div>
+
+      <label class="checkbox-field">
+        <input type="checkbox" name="urgent" <%= formData.urgent ? 'checked' : '' %>>
+        Mark as urgent (needs priority pickup)
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-block mt-lg">Submit Donation</button>
+    </form>
+
+    <p class="text-center mt-lg"><a href="/donor/donations/bulk-new">Donating multiple items at once? Use bulk mode →</a></p>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 720px; margin: 0 auto; }
+    .form-page-head { margin-bottom: var(--space-lg); }
+    .divider { border: none; border-top: 1px solid var(--color-border); margin: var(--space-md) 0; }
+    .checkbox-field { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--fs-body-sm); font-weight: 600; margin-top: var(--space-sm); }
+    .checkbox-field input { width: auto; }
+    .map-picker { height: 260px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-border); margin-top: var(--space-sm); }
+  </style>
+  <script>
+    const expiryField = document.getElementById('expiry-field');
+    expiryField.style.display = 'block';
+  </script>
+  <% if (mapsEnabled) { %>
+    <script src="/js/maps-picker.js"></script>
+    <script>
+      window.__initPickupMap = function () {
+        initAadharMapPicker({ addressInputId: 'address', latInputId: 'lat', lngInputId: 'lng', mapDivId: 'pickup-map' });
+      };
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= googleMapsApiKey %>&libraries=places&callback=__initPickupMap" async defer></script>
+  <% } %>
+</body>
+</html>
