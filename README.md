@@ -17,7 +17,7 @@ framework, no build step — this is a classic server-rendered app you can run w
 
 ---
 
-## 2. Install
+## 2. Installation
 
 ```bash
 cd aadhar
