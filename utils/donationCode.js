@@ -8,7 +8,7 @@ function randomSegment(length) {
   return out;
 }
 
-/**
+/**...
  * Generates a donation tracking code like "AAD-2026-7F3K9Q".
  * Retries on the rare collision instead of trusting randomness alone.
  */
