@@ -5,8 +5,9 @@
   <%- include('../partials/navbar') %>
   <main class="container ngo-dash">
 
-    <div class="donor-dash-header">
-      <div>
+    <div class="dash-welcome-banner">
+      <div class="dash-welcome-copy">
+        <span class="eyebrow" style="margin-bottom:0.4rem;">NGO Administrator Portal</span>
         <h1>Welcome, <%= currentUser.name %> 👋</h1>
         <p class="muted mb-0"><%= currentUser.organizationName %></p>
       </div>
@@ -15,37 +16,59 @@
           <a href="/admin/volunteers?tab=pending" class="btn btn-outline" id="pending-approvals-btn">👥 <%= stats.pendingApprovals %> pending approval<%= stats.pendingApprovals > 1 ? 's' : '' %></a>
         <% } %>
         <% if (stats.activeAlerts > 0) { %>
-          <a href="/admin/emergency" class="btn" style="background: var(--color-danger); color:#fff;">🚨 <%= stats.activeAlerts %> active alert<%= stats.activeAlerts > 1 ? 's' : '' %></a>
+          <a href="/admin/emergency" class="btn btn-primary" style="background: var(--color-danger); box-shadow: 0 4px 12px rgba(217,56,41,0.3);">🚨 <%= stats.activeAlerts %> active alert<%= stats.activeAlerts > 1 ? 's' : '' %></a>
         <% } %>
       </div>
     </div>
 
-    <div class="stat-grid mt-lg" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="stat-grid mt-lg">
       <a href="/admin/donations" class="stat-card">
+        <div class="stat-icon">📦</div>
         <span class="stat-value" id="stat-total"><%= stats.totalDonations %></span>
         <span class="stat-label">Total Donations</span>
       </a>
       <a href="/admin/volunteers?tab=active" class="stat-card">
+        <div class="stat-icon">🧑‍🤝‍🧑</div>
         <span class="stat-value"><%= stats.activeVolunteers %></span>
         <span class="stat-label">Active Volunteers</span>
       </a>
       <a href="/admin/donations?status=pending" class="stat-card">
+        <div class="stat-icon">⏳</div>
         <span class="stat-value" id="stat-pending"><%= stats.pendingPickups %></span>
         <span class="stat-label">Pending Pickups</span>
       </a>
       <a href="/admin/donations?status=delivered" class="stat-card">
+        <div class="stat-icon">✅</div>
         <span class="stat-value"><%= stats.completedDeliveries %></span>
         <span class="stat-label">Delivered</span>
       </a>
     </div>
 
     <div class="quick-links mt-lg">
-      <a href="/admin/donations" class="card quick-link">📦 Manage Donations</a>
-      <a href="/admin/volunteers" class="card quick-link">🧑‍🤝‍🧑 Manage Volunteers</a>
-      <a href="/admin/logistics" class="card quick-link">🗺️ Logistics</a>
-      <a href="/admin/track" class="card quick-link">🔍 Track a Donation</a>
-      <a href="/admin/reports" class="card quick-link">📊 Reports</a>
-      <a href="/admin/emergency" class="card quick-link">🚨 Emergency Mode</a>
+      <a href="/admin/donations" class="quick-link-card">
+        <span class="quick-link-icon">📦</span>
+        <span>Manage Donations</span>
+      </a>
+      <a href="/admin/volunteers" class="quick-link-card">
+        <span class="quick-link-icon">🧑‍🤝‍🧑</span>
+        <span>Manage Volunteers</span>
+      </a>
+      <a href="/admin/logistics" class="quick-link-card">
+        <span class="quick-link-icon">🗺️</span>
+        <span>Logistics & Map</span>
+      </a>
+      <a href="/admin/track" class="quick-link-card">
+        <span class="quick-link-icon">🔍</span>
+        <span>Track a Donation</span>
+      </a>
+      <a href="/admin/reports" class="quick-link-card">
+        <span class="quick-link-icon">📊</span>
+        <span>Reports & Insights</span>
+      </a>
+      <a href="/admin/emergency" class="quick-link-card emergency-link">
+        <span class="quick-link-icon">🚨</span>
+        <span>Emergency Mode</span>
+      </a>
     </div>
 
     <section class="card mt-lg">
@@ -60,10 +83,15 @@
           <% recentDonations.forEach(d => { %>
             <li>
               <a href="/admin/donations/<%= d._id %>/assign" class="donation-row">
-                <div>
-                  <strong style="text-transform:capitalize;"><%= d.type %></strong>
-                  <span class="muted"> · <%= d.quantity %> <%= d.unit || '' %> · by <%= d.donorId ? d.donorId.name : 'Unknown' %></span>
-                  <div class="muted" style="font-size: var(--fs-caption);"><%= d.donationCode %><% if (d.urgent) { %> · <span style="color:var(--color-danger); font-weight:700;">URGENT</span><% } %></div>
+                <div class="donation-info">
+                  <div class="donation-title-line">
+                    <strong style="text-transform:capitalize; font-size:1.05rem;"><%= d.type %></strong>
+                    <span class="muted"> · <%= d.quantity %> <%= d.unit || '' %> · by <%= d.donorId ? d.donorId.name : 'Unknown' %></span>
+                  </div>
+                  <div class="donation-meta-line muted">
+                    <span class="code-tag"><%= d.donationCode %></span>
+                    <% if (d.urgent) { %> · <span class="urgent-tag">🚨 URGENT</span><% } %>
+                  </div>
                 </div>
                 <span class="pill pill-<%= d.status %>"><%= d.status %></span>
               </a>
@@ -78,23 +106,92 @@
 
   <style>
     .ngo-dash { padding: var(--space-xl) 0; }
-    .donor-dash-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .dash-welcome-banner {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .dash-welcome-copy h1 { margin-bottom: var(--space-xs); font-size: 1.8rem; }
     .donor-dash-actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; }
-    .stat-grid { display: grid; gap: var(--space-md); }
-    .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); text-align: center; color: var(--color-ink); transition: box-shadow var(--transition-fast); }
-    .stat-card:hover { box-shadow: var(--shadow-md); }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg) var(--space-md);
+      text-align: center;
+      color: var(--color-ink);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      text-decoration: none;
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); color: var(--color-ink); }
+    .stat-icon { font-size: 1.6rem; margin-bottom: var(--space-xs); }
     .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
-    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); }
+    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); font-weight: 600; }
+
     .quick-links { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-md); }
-    .quick-link { color: var(--color-ink); font-weight: 600; text-align: center; padding: var(--space-md); transition: box-shadow var(--transition-fast), transform var(--transition-fast); }
-    .quick-link:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
-    .link-more { font-size: var(--fs-body-sm); font-weight: 600; }
-    .donation-rows li { border-top: 1px solid var(--color-border); }
-    .donation-rows li:first-child { border-top: none; }
-    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; color: var(--color-ink); }
+    .quick-link-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md) var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      color: var(--color-ink);
+      font-weight: 700;
+      font-size: var(--fs-body-sm);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+    }
+    .quick-link-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+    .quick-link-icon { font-size: 1.5rem; }
+    .emergency-link:hover { border-color: var(--color-danger); color: var(--color-danger); }
+
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+    .link-more { font-size: var(--fs-body-sm); font-weight: 700; }
+    .donation-rows { display: flex; flex-direction: column; gap: var(--space-xs); }
+    .donation-rows li { list-style: none; }
+    .donation-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--color-ink);
+      transition: border-color var(--transition-fast), transform var(--transition-fast);
+    }
+    .donation-row:hover {
+      border-color: var(--color-primary-light);
+      transform: translateX(4px);
+    }
+    .code-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #ffffff;
+      padding: 0.15em 0.5em;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+    }
+    .urgent-tag { color: var(--color-danger); font-weight: 700; }
+
     @media (max-width: 860px) {
-      .stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
       .quick-links { grid-template-columns: repeat(2, 1fr); }
     }
   </style>
@@ -129,3 +226,4 @@
   </script>
 </body>
 </html>
+

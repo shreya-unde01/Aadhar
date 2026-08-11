@@ -5,8 +5,9 @@
   <%- include('../partials/navbar') %>
   <main class="container form-page">
     <div class="form-page-head">
+      <span class="eyebrow" style="margin-bottom:0.4rem;">New Contribution</span>
       <h1>Add a Donation</h1>
-      <p class="muted">Tell us what you're giving and where to pick it up. You'll get a tracking code once it's submitted.</p>
+      <p class="muted">Tell us what you're giving and where to pick it up. You'll get a real-time tracking code once submitted.</p>
     </div>
 
     <% if (errors) { %>
@@ -17,10 +18,10 @@
       </div>
     <% } %>
 
-    <form method="POST" action="/donor/donations" class="card" id="donation-form">
+    <form method="POST" action="/donor/donations" class="card form-card" id="donation-form">
       <div class="field">
         <label>Donation recipient</label>
-        <div class="readonly-input">Lions Club</div>
+        <div class="readonly-input">🦁 Lions Club — Community Welfare</div>
       </div>
 
       <input type="hidden" name="type" value="food">
@@ -37,7 +38,7 @@
 
       <div class="field">
         <label for="description">Description <span class="muted">(optional)</span></label>
-        <textarea name="description" id="description" rows="2" placeholder="Anything the NGO or volunteer should know"><%= formData.description || '' %></textarea>
+        <textarea name="description" id="description" rows="3" placeholder="Special handling, dietary details, or instructions for the volunteer..."><%= formData.description || '' %></textarea>
       </div>
 
       <div class="field" id="expiry-field" style="display:none;">
@@ -49,11 +50,11 @@
 
       <div class="field">
         <label for="address">Pickup Address</label>
-        <input type="text" name="address" id="address" value="<%= formData.address || '' %>" placeholder="Full pickup address" required>
+        <input type="text" name="address" id="address" value="<%= formData.address || '' %>" placeholder="Full street address for pickup" required>
         <% if (!mapsEnabled) { %>
-          <p class="hint">📍 Add a Google Maps API key in <code>.env</code> to enable the map picker — for now, just type the address.</p>
+          <p class="hint">📍 Enter complete address details for seamless pickup coordination.</p>
         <% } else { %>
-          <p class="hint">📍 Start typing to search, or drag the pin to fine-tune the exact pickup point.</p>
+          <p class="hint">📍 Type to search address, or adjust pin position on the map.</p>
         <% } %>
       </div>
       <input type="hidden" name="lat" id="lat" value="<%= formData.lat || '' %>">
@@ -79,27 +80,49 @@
 
       <label class="checkbox-field">
         <input type="checkbox" name="urgent" <%= formData.urgent ? 'checked' : '' %>>
-        Mark as urgent (needs priority pickup)
+        <span>Mark as urgent (priority pickup required)</span>
       </label>
 
-      <button type="submit" class="btn btn-primary btn-block mt-lg">Submit Donation</button>
+      <button type="submit" class="btn btn-primary btn-block btn-lg mt-lg">Submit Donation & Generate Tracking Code</button>
     </form>
 
-    <p class="text-center mt-lg"><a href="/donor/donations/bulk-new">Donating multiple items at once? Use bulk mode →</a></p>
+    <p class="text-center mt-lg"><a href="/donor/donations/bulk-new" class="btn btn-outline btn-sm">Donating multiple items at once? Use bulk mode →</a></p>
   </main>
   <%- include('../partials/footer') %>
 
   <style>
     .form-page { padding: var(--space-xl) 0; max-width: 720px; margin: 0 auto; }
     .form-page-head { margin-bottom: var(--space-lg); }
-    .divider { border: none; border-top: 1px solid var(--color-border); margin: var(--space-md) 0; }
-    .checkbox-field { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--fs-body-sm); font-weight: 600; margin-top: var(--space-sm); }
-    .checkbox-field input { width: auto; }
+    .form-card { box-shadow: var(--shadow-md); border-radius: var(--radius-lg); padding: var(--space-xl); }
+    .readonly-input {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      padding: 0.8rem 1.1rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      color: var(--color-ink);
+      font-size: var(--fs-body-sm);
+    }
+    .divider { border: none; border-top: 1px solid var(--color-border-subtle); margin: var(--space-lg) 0; }
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: var(--fs-body-sm);
+      font-weight: 600;
+      margin-top: var(--space-md);
+      background: var(--color-surface-alt);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border-subtle);
+      cursor: pointer;
+    }
+    .checkbox-field input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--color-primary); }
     .map-picker { height: 260px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-border); margin-top: var(--space-sm); }
   </style>
   <script>
     const expiryField = document.getElementById('expiry-field');
-    expiryField.style.display = 'block';
+    if (expiryField) expiryField.style.display = 'block';
   </script>
   <% if (mapsEnabled) { %>
     <script src="/js/maps-picker.js"></script>
@@ -112,3 +135,4 @@
   <% } %>
 </body>
 </html>
+

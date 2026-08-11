@@ -45,11 +45,13 @@
             <div class="role-picker">
               <label class="role-option">
                 <input type="radio" name="role" value="donor" <%= (!formData || !formData.role || formData.role === 'donor') ? 'checked' : '' %> />
-                Donor
+                <span class="role-option-icon">🎁</span>
+                <span>Donor</span>
               </label>
               <label class="role-option">
                 <input type="radio" name="role" value="volunteer" <%= formData && formData.role === 'volunteer' ? 'checked' : '' %> />
-                Volunteer
+                <span class="role-option-icon">🚲</span>
+                <span>Volunteer</span>
               </label>
             </div>
           </div>

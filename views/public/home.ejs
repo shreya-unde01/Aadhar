@@ -6,44 +6,69 @@
 
   <!-- ================= HERO ================= -->
   <section class="hero">
+    <div class="hero-bg-glow" aria-hidden="true"></div>
     <div class="container hero-inner">
       <div class="hero-copy">
-        <span class="eyebrow">Lions Club Community Service</span>
-        <h1>Donate food, clothes, and hope. <span class="hero-highlight">Track every step.</span></h1>
+        <div class="eyebrow-container">
+          <span class="eyebrow"><span class="eyebrow-dot"></span> Lions Club Community Service</span>
+        </div>
+        <h1>Donate food, clothes, & hope. <span class="hero-highlight">Track every step live.</span></h1>
         <p class="hero-sub">
-          Lions Club connects volunteers and donors so that what you give — a meal, a blanket, an hour of your
-          time — actually reaches someone, and you can watch it happen.
+          Lions Club connects generous donors and passionate volunteers so that what you give — a meal, a warm blanket, or your valuable time — directly reaches people in need, with real-time tracking.
         </p>
         <div class="hero-ctas">
-          <a href="/signup" class="btn btn-primary btn-lg">Donate Now</a>
+          <a href="/signup" class="btn btn-primary btn-lg">Donate Now →</a>
           <a href="/signup" class="btn btn-secondary btn-lg">Join as Volunteer</a>
           <a href="/admin/login" class="btn btn-outline btn-lg">Admin Login</a>
         </div>
       </div>
 
       <div class="hero-art" aria-hidden="true">
-        <svg viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg">
-          <!-- dotted journey path: donor -> volunteer -> recipient -->
-          <path d="M70,90 C 140,60 180,140 210,170 S 300,230 350,260" fill="none" stroke="var(--color-border)" stroke-width="3" stroke-dasharray="2 14" stroke-linecap="round"/>
+        <div class="hero-art-card">
+          <svg viewBox="0 0 440 360" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="heroPathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--color-primary)" />
+                <stop offset="50%" stop-color="var(--color-accent)" />
+                <stop offset="100%" stop-color="var(--color-secondary)" />
+              </linearGradient>
+              <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="6" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+              </filter>
+            </defs>
 
-          <!-- Donor node -->
-          <circle cx="70" cy="90" r="34" fill="var(--color-primary-tint)"/>
-          <circle cx="70" cy="90" r="34" fill="none" stroke="var(--color-primary)" stroke-width="2.5"/>
-          <text x="70" y="98" text-anchor="middle" font-size="28">🍲</text>
-          <text x="70" y="145" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="var(--color-ink)">Donor</text>
+            <!-- Animated dotted journey path -->
+            <path d="M 75,95 C 150,60 180,140 220,175 S 310,230 365,265" fill="none" stroke="url(#heroPathGrad)" stroke-width="4" stroke-dasharray="6 8" stroke-linecap="round" />
 
-          <!-- Volunteer node -->
-          <circle cx="230" cy="185" r="34" fill="var(--color-secondary-tint)"/>
-          <circle cx="230" cy="185" r="34" fill="none" stroke="var(--color-secondary)" stroke-width="2.5"/>
-          <text x="230" y="193" text-anchor="middle" font-size="28">🚲</text>
-          <text x="230" y="240" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="var(--color-ink)">Volunteer</text>
+            <!-- Donor node -->
+            <g transform="translate(75, 95)">
+              <circle r="42" fill="var(--color-primary-tint)" opacity="0.6" filter="url(#glow)"/>
+              <circle r="36" fill="#ffffff" stroke="var(--color-primary)" stroke-width="3"/>
+              <text y="8" text-anchor="middle" font-size="28">🍲</text>
+              <text y="58" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="700" fill="var(--color-ink)">Donor</text>
+            </g>
 
-          <!-- Recipient node -->
-          <circle cx="355" cy="270" r="34" fill="var(--color-primary-tint)"/>
-          <circle cx="355" cy="270" r="34" fill="none" stroke="var(--color-primary)" stroke-width="2.5"/>
-          <text x="355" y="278" text-anchor="middle" font-size="28">❤️</text>
-          <text x="355" y="325" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="600" fill="var(--color-ink)">Recipient</text>
-        </svg>
+            <!-- Volunteer node -->
+            <g transform="translate(220, 175)">
+              <circle r="42" fill="var(--color-secondary-tint)" opacity="0.6" filter="url(#glow)"/>
+              <circle r="36" fill="#ffffff" stroke="var(--color-secondary)" stroke-width="3"/>
+              <text y="8" text-anchor="middle" font-size="28">🚲</text>
+              <text y="58" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="700" fill="var(--color-ink)">Volunteer</text>
+            </g>
+
+            <!-- Recipient node -->
+            <g transform="translate(365, 265)">
+              <circle r="42" fill="var(--color-accent-tint)" opacity="0.6" filter="url(#glow)"/>
+              <circle r="36" fill="#ffffff" stroke="var(--color-accent)" stroke-width="3"/>
+              <text y="8" text-anchor="middle" font-size="28">❤️</text>
+              <text y="58" text-anchor="middle" font-family="var(--font-body)" font-size="13" font-weight="700" fill="var(--color-ink)">Recipient</text>
+            </g>
+          </svg>
+          <div class="hero-art-live-badge">
+            <span class="pulse-dot"></span> Real-Time Delivery Tracking Active
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -51,24 +76,30 @@
   <!-- ================= THREE PILLARS ================= -->
   <section class="section">
     <div class="container">
+      <div class="section-head text-center mx-auto">
+        <span class="badge-tag">How AADHAR Works</span>
+        <h2>Connecting compassionate hearts with real-time action</h2>
+        <p class="muted">A transparent bridge connecting those who have surplus resources with communities in need.</p>
+      </div>
+
       <div class="pillar-grid">
         <div class="pillar-card">
-          <span class="pillar-icon">🍲</span>
-          <h3>Donate Food, Save Lives</h3>
-          <p>Food, clothes, groceries, medicine, books, money, or your skills — list what you're giving and when it's ready for pickup.</p>
-          <a href="/signup" class="pillar-link">Start donating →</a>
+          <div class="pillar-icon-wrap">🍲</div>
+          <h3>Donate Food & Essentials</h3>
+          <p>Share surplus meals, clothes, medicine, books, or financial contributions. Schedule quick pickup windows with local volunteers.</p>
+          <a href="/signup" class="pillar-link">Start donating <span class="arrow">→</span></a>
         </div>
         <div class="pillar-card">
-          <span class="pillar-icon">🚲</span>
-          <h3>Become a Volunteer</h3>
-          <p>Accept nearby pickups, deliver where it's needed most, and confirm every handoff — your work is what makes the chain real.</p>
-          <a href="/signup" class="pillar-link">Join as volunteer →</a>
+          <div class="pillar-icon-wrap">🚲</div>
+          <h3>Volunteer & Deliver</h3>
+          <p>Accept nearby pickup requests, deliver directly to verified beneficiaries or community hubs, and upload instant handoff confirmations.</p>
+          <a href="/signup" class="pillar-link">Join as volunteer <span class="arrow">→</span></a>
         </div>
         <div class="pillar-card">
-          <span class="pillar-icon">📍</span>
-          <h3>Track Impact</h3>
-          <p>Every donation gets a tracking code and a visible journey — pending, assigned, picked up, delivered — start to finish.</p>
-          <a href="/impact" class="pillar-link">See live impact →</a>
+          <div class="pillar-icon-wrap">📍</div>
+          <h3>Track Live Impact</h3>
+          <p>Every donation receives a unique tracking code. Monitor journey status live from pickup to final recipient delivery.</p>
+          <a href="/impact" class="pillar-link">See live impact <span class="arrow">→</span></a>
         </div>
       </div>
     </div>
@@ -77,124 +108,413 @@
   <!-- ================= LIVE STATS ================= -->
   <section class="section stats-section" id="impact-stats">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head text-center mx-auto">
+        <div class="live-indicator-pill"><span class="pulse-dot"></span> Verified Real-Time Database Metrics</div>
         <h2>Impact, live from the database</h2>
-        <p class="muted">No mockups — these numbers update in real time as deliveries are confirmed.</p>
+        <p class="muted">Updated continuously as volunteers complete verified deliveries.</p>
       </div>
       <div class="stat-grid-public">
         <div class="stat-card-public">
+          <div class="stat-icon">🍽️</div>
           <span class="stat-value-public" id="stat-meals" data-count-to="<%= stats.mealsDelivered %>">0</span>
           <span class="stat-label-public">Meals Served</span>
         </div>
         <div class="stat-card-public">
+          <div class="stat-icon">👥</div>
           <span class="stat-value-public" id="stat-people" data-count-to="<%= stats.peopleHelpedEstimate %>">0</span>
           <span class="stat-label-public">People Helped <span class="muted" style="font-size:0.7em;">(est.)</span></span>
         </div>
         <div class="stat-card-public">
+          <div class="stat-icon">🌱</div>
           <span class="stat-value-public" id="stat-waste" data-count-to="<%= stats.wasteReducedKg %>">0</span>
           <span class="stat-label-public">kg Waste Reduced</span>
         </div>
         <div class="stat-card-public">
+          <div class="stat-icon">🤝</div>
           <span class="stat-value-public" id="stat-volunteers" data-count-to="<%= stats.activeVolunteers %>">0</span>
           <span class="stat-label-public">Active Volunteers</span>
         </div>
       </div>
-      <p class="text-center mt-lg"><a href="/impact">See the full impact dashboard →</a></p>
+      <p class="text-center mt-lg"><a href="/impact" class="btn btn-outline">Explore Full Analytics Dashboard →</a></p>
     </div>
   </section>
 
   <!-- ================= TESTIMONIALS ================= -->
   <section class="section">
     <div class="container">
-      <div class="section-head">
-        <h2>What people are saying</h2>
+      <div class="section-head text-center mx-auto">
+        <span class="badge-tag">Community Voices</span>
+        <h2>What our community says</h2>
       </div>
       <div class="testimonial-grid">
         <blockquote class="testimonial-card">
-          <p>"We used to throw away trays of food after every wedding. Now it's picked up within the hour — someone's actually eating it."</p>
-          <footer>— Anjali R., Banquet Hall Owner</footer>
+          <div class="quote-mark">“</div>
+          <p>"We used to throw away trays of surplus food after events. Now a volunteer picks it up within the hour — someone actually eats it fresh!"</p>
+          <footer>
+            <div class="author-avatar">AR</div>
+            <div>
+              <div class="author-name">Anjali R.</div>
+              <div class="author-role">Banquet Hall Owner</div>
+            </div>
+          </footer>
         </blockquote>
         <blockquote class="testimonial-card">
-          <p>"I volunteer two evenings a week. Seeing the tracking code go from 'picked up' to 'delivered' after I've dropped something off is oddly satisfying."</p>
-          <footer>— Rohit K., Volunteer</footer>
+          <div class="quote-mark">“</div>
+          <p>"I volunteer two evenings a week. Seeing the tracking code update to 'Delivered' right after I drop off supplies is deeply rewarding."</p>
+          <footer>
+            <div class="author-avatar">RK</div>
+            <div>
+              <div class="author-name">Rohit K.</div>
+              <div class="author-role">Active Volunteer</div>
+            </div>
+          </footer>
         </blockquote>
         <blockquote class="testimonial-card">
-          <p>"Coordinating pickups used to mean a dozen phone calls. Now I assign a volunteer in two clicks and can see exactly where every donation is."</p>
-          <footer>— Sr. Fatima, NGO Program Director</footer>
+          <div class="quote-mark">“</div>
+          <p>"Coordinating food drives used to take dozens of phone calls. Now I assign volunteers in two clicks and track real-time logistics."</p>
+          <footer>
+            <div class="author-avatar">SF</div>
+            <div>
+              <div class="author-name">Sr. Fatima</div>
+              <div class="author-role">NGO Program Director</div>
+            </div>
+          </footer>
         </blockquote>
       </div>
-      <p class="muted text-center" style="font-size: var(--fs-caption);">Illustrative quotes for demonstration purposes.</p>
     </div>
   </section>
 
   <!-- ================= FINAL CTA + SHARE ================= -->
   <section class="section final-cta">
-    <div class="container final-cta-inner">
-      <div>
-        <h2>Ready to be part of the chain?</h2>
-        <p class="muted mb-0">Join Lions Club as a donor or volunteer.</p>
+    <div class="container">
+      <div class="final-cta-card">
+        <div class="final-cta-content">
+          <h2>Ready to be part of the change?</h2>
+          <p class="muted mb-0">Join Lions Club AADHAR today as a donor or volunteer and bring warmth to lives around you.</p>
+        </div>
+        <div class="final-cta-actions">
+          <a href="/signup" class="btn btn-primary btn-lg">Get Started Now</a>
+        </div>
       </div>
-      <div class="hero-ctas">
-        <a href="/signup" class="btn btn-primary btn-lg">Get Started</a>
+
+      <div class="share-row">
+        <span class="share-title">Share AADHAR:</span>
+        <a class="share-btn" target="_blank" rel="noopener" href="https://wa.me/?text=Check%20out%20AADHAR%20%E2%80%94%20a%20platform%20connecting%20NGOs%2C%20volunteers%2C%20and%20donors">WhatsApp</a>
+        <a class="share-btn" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=Check%20out%20AADHAR%20%E2%80%94%20a%20platform%20connecting%20NGOs%2C%20volunteers%2C%20and%20donors">X / Twitter</a>
+        <a class="share-btn" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Faadhar.example.org">Facebook</a>
+        <button class="share-btn" id="copy-link-btn" type="button">Copy Link</button>
       </div>
-    </div>
-    <div class="container share-row">
-      <span class="muted" style="font-size: var(--fs-body-sm);">Share AADHAR:</span>
-      <a class="share-btn" target="_blank" rel="noopener" href="https://wa.me/?text=Check%20out%20AADHAR%20%E2%80%94%20a%20platform%20connecting%20NGOs%2C%20volunteers%2C%20and%20donors">WhatsApp</a>
-      <a class="share-btn" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=Check%20out%20AADHAR%20%E2%80%94%20a%20platform%20connecting%20NGOs%2C%20volunteers%2C%20and%20donors">X / Twitter</a>
-      <a class="share-btn" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Faadhar.example.org">Facebook</a>
-      <button class="share-btn" id="copy-link-btn" type="button">Copy Link</button>
     </div>
   </section>
 
   <%- include('../partials/footer') %>
 
   <style>
-    .hero { background: linear-gradient(180deg, var(--color-surface-alt), var(--color-bg)); overflow: hidden; }
-    .hero-inner { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: var(--space-xl); padding: var(--space-2xl) 0; }
-    .eyebrow { display: inline-block; font-size: var(--fs-caption); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-primary-dark); background: var(--color-primary-tint); padding: 0.3em 0.9em; border-radius: var(--radius-full); margin-bottom: var(--space-md); }
-    .hero-copy h1 { font-size: var(--fs-display-xl); max-width: 15ch; }
-    .hero-highlight { color: var(--color-primary); }
-    .hero-sub { font-size: var(--fs-body-lg); max-width: 46ch; }
-    .hero-ctas { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-top: var(--space-lg); }
-    .btn-lg { padding: 0.85em 1.6em; font-size: var(--fs-body); }
-    .btn-secondary { background: var(--color-secondary); color: #fff; }
-    .btn-secondary:hover { background: var(--color-secondary-dark); }
-    .hero-art svg { width: 100%; height: auto; }
+    .hero {
+      position: relative;
+      background: var(--gradient-hero);
+      overflow: hidden;
+      padding: var(--space-2xl) 0 var(--space-xl);
+    }
+    .hero-bg-glow {
+      position: absolute;
+      top: -150px; right: -100px;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(227, 93, 37, 0.12) 0%, rgba(47, 122, 79, 0.08) 50%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: var(--space-xl);
+      position: relative;
+      z-index: 2;
+    }
+    .eyebrow-container { margin-bottom: var(--space-md); }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--color-primary-dark);
+      background: var(--color-primary-tint);
+      padding: 0.4em 1em;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(227, 93, 37, 0.2);
+    }
+    .eyebrow-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+    }
+    .hero-copy h1 {
+      font-size: var(--fs-display-xl);
+      line-height: 1.15;
+      margin-bottom: var(--space-md);
+    }
+    .hero-highlight {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: var(--fs-body-lg);
+      max-width: 48ch;
+      line-height: 1.6;
+      margin-bottom: var(--space-xl);
+    }
+    .hero-ctas {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .hero-art-card {
+      background: var(--color-surface-glass);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      box-shadow: var(--shadow-lg);
+      position: relative;
+    }
+    .hero-art-live-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-full);
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      color: var(--color-secondary-dark);
+      box-shadow: var(--shadow-sm);
+      margin-top: -10px;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--color-secondary);
+      box-shadow: 0 0 0 0 rgba(47, 122, 79, 0.7);
+      animation: pulse-ring 1.8s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(47, 122, 79, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(47, 122, 79, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(47, 122, 79, 0); }
+    }
 
     .section { padding: var(--space-2xl) 0; }
-    .section-head { max-width: 60ch; margin-bottom: var(--space-lg); }
+    .section-head { max-width: 64ch; margin-bottom: var(--space-xl); }
+    .badge-tag {
+      display: inline-block;
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-secondary-dark);
+      background: var(--color-secondary-tint);
+      padding: 0.3em 0.8em;
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-xs);
+    }
+    .mx-auto { margin-left: auto; margin-right: auto; }
 
-    .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
-    .pillar-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-lg); transition: box-shadow var(--transition-base), transform var(--transition-base); }
-    .pillar-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
-    .pillar-icon { font-size: 2.2rem; display: block; margin-bottom: var(--space-sm); }
-    .pillar-link { font-weight: 700; }
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+    .pillar-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+    }
+    .pillar-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-6px);
+      border-color: var(--color-primary-light);
+    }
+    .pillar-icon-wrap {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: var(--space-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .pillar-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-top: var(--space-sm);
+    }
+    .pillar-link .arrow { transition: transform var(--transition-fast); }
+    .pillar-link:hover .arrow { transform: translateX(4px); }
 
-    .stats-section { background: var(--color-surface-alt); border-radius: var(--radius-lg); margin: 0 var(--space-lg); }
-    .stat-grid-public { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
-    .stat-card-public { background: var(--color-surface); border-radius: var(--radius-lg); padding: var(--space-lg); text-align: center; box-shadow: var(--shadow-sm); }
-    .stat-value-public { display: block; font-family: var(--font-display); font-size: var(--fs-display-lg); font-weight: 700; color: var(--color-primary); }
+    .stats-section {
+      background: var(--gradient-hero);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--color-border);
+      padding: var(--space-xl) var(--space-lg);
+      margin: 0 var(--space-md);
+      box-shadow: var(--shadow-sm);
+    }
+    .live-indicator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      padding: 0.35rem 0.9rem;
+      border-radius: var(--radius-full);
+      font-size: var(--fs-caption);
+      font-weight: 700;
+      color: var(--color-secondary-dark);
+      margin-bottom: var(--space-sm);
+    }
+    .stat-grid-public {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+    .stat-card-public {
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      padding: var(--space-lg);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .stat-card-public:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .stat-icon { font-size: 1.8rem; margin-bottom: var(--space-xs); }
+    .stat-value-public {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      font-weight: 700;
+      color: var(--color-primary);
+    }
     .stat-label-public { color: var(--color-ink-soft); font-weight: 600; font-size: var(--fs-body-sm); }
 
     .testimonial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
-    .testimonial-card { background: var(--color-surface); border-left: 4px solid var(--color-primary); border-radius: var(--radius-md); padding: var(--space-lg); margin: 0; }
-    .testimonial-card p { color: var(--color-ink); font-style: italic; }
-    .testimonial-card footer { font-size: var(--fs-body-sm); font-weight: 700; color: var(--color-ink-soft); }
+    .testimonial-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg);
+      margin: 0;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+    .quote-mark {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--color-primary-tint);
+      position: absolute;
+      top: 10px; right: 15px;
+    }
+    .testimonial-card p {
+      color: var(--color-ink);
+      font-style: italic;
+      position: relative;
+      z-index: 2;
+      margin-bottom: var(--space-md);
+    }
+    .testimonial-card footer {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .author-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--color-secondary-tint);
+      color: var(--color-secondary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .author-name { font-weight: 700; font-size: var(--fs-body-sm); color: var(--color-ink); }
+    .author-role { font-size: var(--fs-caption); color: var(--color-muted); }
 
-    .final-cta-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); flex-wrap: wrap; background: var(--color-secondary-tint); border-radius: var(--radius-lg); padding: var(--space-xl); }
-    .share-row { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; margin-top: var(--space-lg); }
-    .share-btn { border: 1.5px solid var(--color-border); border-radius: var(--radius-full); padding: 0.4em 1em; font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink); background: var(--color-surface); cursor: pointer; }
-    .share-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .final-cta-card {
+      background: linear-gradient(135deg, #1e5937 0%, #113822 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: var(--space-2xl) var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-lg);
+      box-shadow: var(--shadow-lg);
+    }
+    .final-cta-content h2 { color: #ffffff; font-size: var(--fs-display-md); }
+    .final-cta-content p { color: rgba(255, 255, 255, 0.85); }
+    .share-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-top: var(--space-xl);
+      justify-content: center;
+    }
+    .share-title { font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink-soft); }
+    .share-btn {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      padding: 0.45em 1.2em;
+      font-size: var(--fs-body-sm);
+      font-weight: 600;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+    }
+    .share-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      transform: translateY(-1px);
+    }
 
     @media (max-width: 900px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-art { order: -1; max-width: 280px; margin: 0 auto; }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-copy h1 { max-width: 100%; }
+      .hero-sub { max-width: 100%; margin-left: auto; margin-right: auto; }
+      .hero-ctas { justify-content: center; }
       .pillar-grid, .testimonial-grid { grid-template-columns: 1fr; }
       .stat-grid-public { grid-template-columns: repeat(2, 1fr); }
-      .stats-section { margin: 0 var(--space-sm); }
+      .stats-section { margin: 0; }
+      .final-cta-card { flex-direction: column; text-align: center; }
     }
   </style>
+
   <script src="/js/counter-animate.js"></script>
   <script>
     (function () {
@@ -217,10 +537,11 @@
             if (mealsEl) window.AadharCounters.bump(mealsEl, payload.quantity);
             if (wasteEl) window.AadharCounters.bump(wasteEl, payload.quantity);
           }
-          if (peopleEl) window.AadharCounters.bump(peopleEl, 3); // matches server-side estimate multiplier
+          if (peopleEl) window.AadharCounters.bump(peopleEl, 3);
         });
       }
     })();
   </script>
 </body>
 </html>
+

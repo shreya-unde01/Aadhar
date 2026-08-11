@@ -24,7 +24,7 @@ exports.getOverview = async (req, res) => {
       EmergencyAlert.countDocuments({ isActive: true }),
     ]);
 
-  const recentDonations = await Donation.find({ ngoId }).sort({ createdAt: -1 }).limit(6).populate('donorId', 'name');
+  const recentDonations = await Donation.find({ ngoId }).sort({ urgent: -1, createdAt: -1 }).limit(6).populate('donorId', 'name');
 
   res.render('ngo/dashboard', {
     title: 'Lions Club Admin Dashboard',

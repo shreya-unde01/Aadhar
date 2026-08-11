@@ -34,7 +34,7 @@ exports.getDashboard = async (req, res) => {
 
   const [donor, recentDonations, statusCounts] = await Promise.all([
     Donor.findById(donorId).populate('badges.badgeId'),
-    Donation.find({ donorId }).sort({ createdAt: -1 }).limit(5),
+    Donation.find({ donorId }).sort({ urgent: -1, createdAt: -1 }).limit(5),
     Donation.aggregate([
       { $match: { donorId } },
       { $group: { _id: '$status', count: { $sum: 1 } } },
@@ -203,7 +203,7 @@ exports.getDonationsList = async (req, res) => {
   if (status && Donation.STATUSES.includes(status)) filter.status = status;
   if (bulkGroupId) filter.bulkGroupId = bulkGroupId;
 
-  const donations = await Donation.find(filter).sort({ createdAt: -1 });
+  const donations = await Donation.find(filter).sort({ urgent: -1, createdAt: -1 });
 
   res.render('donor/donations-list', {
     title: 'My Donations',

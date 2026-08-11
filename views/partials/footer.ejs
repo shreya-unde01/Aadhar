@@ -1,18 +1,113 @@
 <footer class="site-footer">
-  <div class="container site-footer-inner">
-    <span>&copy; <%= new Date().getFullYear() %> Lions Club — The Soul Serves</span>
-    <span class="muted">Built for Lions Club, volunteers, and donors.</span>
+  <div class="container site-footer-main">
+    <div class="footer-col footer-brand-col">
+      <div class="footer-logo">
+        <img src="/images/logo.svg" alt="Lions Club Logo" class="footer-logo-img" />
+        <span>Lions Club <span>— The Soul Serves</span></span>
+      </div>
+      <p class="footer-desc">
+        A smart community welfare platform bridging donors, NGOs, and volunteers to minimize waste and deliver hope with 100% live transparency.
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/impact">Impact Dashboard</a></li>
+        <li><a href="/signup">Donate Essentials</a></li>
+        <li><a href="/signup">Volunteer Network</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Portals</h4>
+      <ul>
+        <li><a href="/login">Donor Portal</a></li>
+        <li><a href="/login">Volunteer Login</a></li>
+        <li><a href="/admin/login">NGO Admin Portal</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Lions Club Mission</h4>
+      <p class="footer-mission-text">
+        "Where there's a need, there's a Lion." Serving humanitarian causes across communities worldwide.
+      </p>
+    </div>
+  </div>
+
+  <div class="container site-footer-bottom">
+    <span>&copy; <%= new Date().getFullYear() %> Lions Club — AADHAR. All rights reserved.</span>
+    <span class="muted">Built with compassion for donors, volunteers, and beneficiaries.</span>
   </div>
 </footer>
+
 <style>
-  .site-footer { border-top: 1px solid var(--color-border); padding: var(--space-lg) 0; margin-top: var(--space-2xl); }
-  .site-footer-inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-sm); font-size: var(--fs-body-sm); color: var(--color-ink-soft); }
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding-top: var(--space-2xl);
+    padding-bottom: var(--space-lg);
+    margin-top: var(--space-2xl);
+  }
+  .site-footer-main {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: var(--space-xl);
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+  .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin-bottom: var(--space-sm);
+  }
+  .footer-logo-img { width: 32px; height: 32px; }
+  .footer-logo span span { color: var(--color-muted); font-size: 0.85rem; font-weight: 500; }
+  .footer-desc { font-size: var(--fs-body-sm); color: var(--color-ink-soft); line-height: 1.6; }
+  .footer-col h4 {
+    font-family: var(--font-body);
+    font-size: var(--fs-body-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-ink);
+    margin-bottom: var(--space-sm);
+  }
+  .footer-col ul { display: flex; flex-direction: column; gap: 0.4rem; }
+  .footer-col a { font-size: var(--fs-body-sm); color: var(--color-ink-soft); transition: color var(--transition-fast); }
+  .footer-col a:hover { color: var(--color-primary); }
+  .footer-mission-text { font-size: var(--fs-body-sm); color: var(--color-ink-soft); font-style: italic; background: var(--color-surface-alt); padding: var(--space-sm); border-radius: var(--radius-sm); border-left: 3px solid var(--color-secondary); }
+
+  .site-footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
+    font-size: var(--fs-caption);
+    color: var(--color-ink-soft);
+  }
+
+  @media (max-width: 840px) {
+    .site-footer-main { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 540px) {
+    .site-footer-main { grid-template-columns: 1fr; }
+    .site-footer-bottom { flex-direction: column; text-align: center; }
+  }
 </style>
 
-<!-- Real-time updates (Phase 5/6). Authenticated users get personal rooms
-     via their existing login cookie (see sockets/index.js); anonymous
-     visitors still connect so public impact counters can update live. -->
+<!-- Real-time updates -->
 <script src="/socket.io/socket.io.js"></script>
 <script>
   window.aadharSocket = io();
 </script>
+
