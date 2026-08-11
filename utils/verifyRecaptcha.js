@@ -6,7 +6,7 @@
  * set, this function short-circuits to `true` in development so the rest of
  * signup/login flow can be built and tested without live keys. As soon as
  * you drop real keys into .env, this enforces properly — no code changes
- * needed on your end.
+ * needed on your end....
  */
 async function verifyRecaptcha(token) {
   const secret = process.env.RECAPTCHA_SECRET_KEY;
