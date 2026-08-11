@@ -31,7 +31,7 @@
     <main class="auth-form-side">
       <div class="auth-form-wrap">
         <h2>Create your account</h2>
-        <p class="subhead muted">Join as a donor or volunteer.</p>
+        <p class="subhead muted">Join as a donor, volunteer, or household requesting food support.</p>
 
         <% if (errors && errors.length) { %>
           <div class="alert alert-error">
@@ -50,6 +50,10 @@
               <label class="role-option">
                 <input type="radio" name="role" value="volunteer" <%= formData && formData.role === 'volunteer' ? 'checked' : '' %> />
                 Volunteer
+              </label>
+              <label class="role-option">
+                <input type="radio" name="role" value="elderly" <%= formData && formData.role === 'elderly' ? 'checked' : '' %> />
+                Elderly couple
               </label>
             </div>
           </div>
@@ -99,6 +103,15 @@
             <label for="skills">Skills you can offer (optional)</label>
             <input type="text" id="skills" name="skills" placeholder="e.g. tutoring, cooking, driving" value="<%= formData && formData.skills ? formData.skills : '' %>" />
             <div class="hint">Comma-separated. Used for the skill-volunteering module.</div>
+          </div>
+
+          <div class="field role-specific" data-role="elderly">
+            <label for="partnerName">Partner's full name</label>
+            <input type="text" id="partnerName" name="partnerName" value="<%= formData && formData.partnerName ? formData.partnerName : '' %>" />
+          </div>
+          <div class="field role-specific" data-role="elderly">
+            <label for="homeAddress">Home address for delivery</label>
+            <textarea id="homeAddress" name="homeAddress" rows="3" placeholder="House number, street, area, city"><%= formData && formData.homeAddress ? formData.homeAddress : '' %></textarea>
           </div>
 
           <div class="recaptcha-note">

@@ -42,19 +42,20 @@
     <% } else { %>
       <div class="donation-cards">
         <% tasks.forEach(t => { %>
-          <% const d = t.donationId; %>
+          <% const d = t.donationId; const request = t.foodRequestId; %>
           <div class="card task-card">
             <div class="section-heading" style="margin-bottom: var(--space-xs);">
-              <strong style="text-transform:capitalize;"><%= d.type %></strong>
+              <strong style="text-transform:capitalize;"><%= d ? d.type : 'Food delivery' %></strong>
               <span class="pill pill-<%= t.status === 'picked' ? 'picked' : 'assigned' %>"><%= t.status %></span>
             </div>
-            <p class="muted mb-0"><%= d.quantity %> <%= d.unit || '' %> · <%= d.donationCode %>
-              <% if (d.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
+            <p class="muted mb-0"><%= d ? `${d.quantity} ${d.unit || ''} · ${d.donationCode}` : request.requirements %>
+              <% if (d && d.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
             </p>
             <dl class="detail-list mt-sm">
               <dt>Pickup</dt><dd><%= t.pickupLocation.address %></dd>
+              <% if (t.beneficiaryId) { %><dt>Recipient</dt><dd><%= t.beneficiaryId.name %> &amp; <%= t.beneficiaryId.partnerName %></dd><% } %>
               <dt>Delivery</dt><dd><%= t.deliveryLocation.address %></dd>
-              <dt>Time Slot</dt><dd><%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–<%= d.timeSlot.endTime %></dd>
+              <% if (d) { %><dt>Time Slot</dt><dd><%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–<%= d.timeSlot.endTime %></dd><% } %>
             </dl>
 
             <% if (mapsEnabled) { %>

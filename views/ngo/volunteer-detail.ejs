@@ -39,8 +39,8 @@
             <% tasks.forEach(t => { %>
               <li class="donation-row">
                 <div>
-                  <strong><%= t.donationId ? t.donationId.donationCode : '—' %></strong>
-                  <span class="muted"> · <%= t.donationId ? t.donationId.type : '' %></span>
+                  <strong><%= t.donationId ? t.donationId.donationCode : 'Elderly food request' %></strong>
+                  <span class="muted"> · <%= t.donationId ? t.donationId.type : (t.foodRequestId ? t.foodRequestId.requirements : 'Food delivery') %></span>
                 </div>
                 <span class="pill pill-<%= t.status === 'delivered' ? 'delivered' : (t.status === 'picked' ? 'picked' : 'assigned') %>"><%= t.status %></span>
               </li>

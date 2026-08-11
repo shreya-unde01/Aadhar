@@ -15,11 +15,14 @@
           <a href="/donor/leaderboard">Leaderboard</a>
         <% } else if (currentUser.role === 'ngo_admin') { %>
           <a href="/admin/donations">Donations</a>
+          <a href="/admin/food-requests">Food requests</a>
           <a href="/admin/volunteers">Volunteers</a>
           <a href="/admin/logistics">Logistics</a>
           <a href="/admin/reports">Reports</a>
         <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
           <a href="/volunteer/feedback">My Ratings</a>
+        <% } else if (currentUser.role === 'elderly') { %>
+          <a href="/elderly/requests/new">Request food</a>
         <% } %>
         <span class="site-navbar-user"><%= currentUser.name %></span>
         <form action="/logout" method="POST" class="inline-form">

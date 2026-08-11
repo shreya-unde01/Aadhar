@@ -44,10 +44,22 @@
 
     <% if (donation.status === 'pending') { %>
       <form method="POST" action="/admin/donations/<%= donation._id %>/assign" class="card mt-lg">
-        <h2>Delivery Destination</h2>
+        <h2>Elderly Couple Recipient</h2>
         <div class="field">
-          <label for="deliveryAddress">Delivery Address</label>
-          <input type="text" name="deliveryAddress" id="deliveryAddress" value="<%= defaultDeliveryAddress %>" placeholder="Where the volunteer should deliver to" required>
+          <label for="elderlyId">Choose the household receiving this donation</label>
+          <select name="elderlyId" id="elderlyId" required>
+            <option value="">Select an elderly couple</option>
+            <% elderlyCouples.forEach(couple => { %>
+              <option value="<%= couple._id %>" data-address="<%= couple.homeAddress %>">
+                <%= couple.name %> &amp; <%= couple.partnerName %> — <%= couple.homeAddress %>
+              </option>
+            <% }) %>
+          </select>
+          <% if (elderlyCouples.length === 0) { %>
+            <div class="hint">No active elderly couple accounts are available. Ask the household to create an account first.</div>
+          <% } else { %>
+            <div class="hint">The selected household's saved home address will be used for delivery.</div>
+          <% } %>
         </div>
         <hr class="divider">
 
@@ -71,7 +83,7 @@
               </label>
             <% }) %>
           </div>
-          <button type="submit" class="btn btn-primary btn-block mt-lg">Assign Volunteer</button>
+          <button type="submit" class="btn btn-primary btn-block mt-lg" <%= elderlyCouples.length === 0 ? 'disabled' : '' %>>Assign Volunteer</button>
         <% } %>
       </form>
     <% } %>

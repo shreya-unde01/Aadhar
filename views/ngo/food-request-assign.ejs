@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Assign Food Delivery' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container form-page">
+    <div class="form-page-head">
+      <h1>Arrange food delivery</h1>
+      <p class="muted">For <%= request.householdId.name %> · <%= request.householdId.phone %></p>
+    </div>
+    <section class="card">
+      <h2>Household request</h2>
+      <p><strong>Food needed:</strong> <%= request.requirements %></p>
+      <p class="muted mb-0"><strong>Deliver to:</strong> <%= request.deliveryAddress %></p>
+      <% if (request.deliveryNote) { %><p class="muted"><strong>Note:</strong> <%= request.deliveryNote %></p><% } %>
+    </section>
+    <form method="POST" action="/admin/food-requests/<%= request._id %>/assign" class="card mt-lg">
+      <h2>Choose a volunteer</h2>
+      <% if (volunteers.length === 0) { %>
+        <p class="muted">No approved volunteers are available. Approve or reactivate a volunteer before assigning this request.</p>
+      <% } else { %>
+        <div class="volunteer-picker">
+          <% volunteers.forEach((volunteer, index) => { %>
+            <label class="volunteer-option">
+              <input type="radio" name="volunteerId" value="<%= volunteer._id %>" <%= index === 0 ? 'checked' : '' %> required>
+              <span><strong><%= volunteer.name %></strong> · <span class="muted"><%= volunteer.phone %></span></span>
+            </label>
+          <% }) %>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block mt-lg">Assign delivery</button>
+      <% } %>
+    </form>
+  </main>
+  <%- include('../partials/footer') %>
+  <style>
+    .form-page { padding: var(--space-xl) 0; max-width: 720px; margin: 0 auto; }
+    .volunteer-picker { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .volunteer-option { display: flex; align-items: center; gap: var(--space-sm); border: 1.5px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); cursor: pointer; }
+    .volunteer-option:has(input:checked) { border-color: var(--color-primary); background: var(--color-primary-tint); }
+  </style>
+</body>
+</html>
