@@ -2,6 +2,7 @@ const Task = require('../models/Task');
 const Donation = require('../models/Donation');
 const Feedback = require('../models/Feedback');
 const EmergencyAlert = require('../models/EmergencyAlert');
+const FoodRequest = require('../models/FoodRequest');
 const { Volunteer } = require('../models/User');
 const { haversineDistanceKm } = require('../utils/geo');
 const { updateDonationStatus } = require('../utils/donationStatusService');
@@ -16,7 +17,9 @@ exports.getDashboard = async (req, res) => {
     status: { $in: ['assigned', 'accepted', 'picked'] },
   })
     .sort({ createdAt: -1 })
-    .populate('donationId');
+    .populate('donationId')
+    .populate('foodRequestId')
+    .populate('beneficiaryId', 'name partnerName phone homeAddress');
 
   let nearbyAlerts = [];
   const { lat, lng } = req.user.location || {};
@@ -60,11 +63,13 @@ exports.postRejectTask = async (req, res) => {
     await task.save();
     emitVolunteerTaskUpdate(task);
 
-    const donation = await Donation.findById(task.donationId);
+    const donation = task.donationId ? await Donation.findById(task.donationId) : null;
     if (donation) {
       donation.assignedVolunteerId = null;
       donation.assignedByNgoId = null;
       await updateDonationStatus(donation, 'pending', 'Volunteer declined — needs reassignment');
+    } else if (task.foodRequestId) {
+      await FoodRequest.findByIdAndUpdate(task.foodRequestId, { status: 'pending' });
     }
   }
   res.redirect('/volunteer/dashboard');
@@ -81,8 +86,9 @@ exports.postMarkPicked = async (req, res) => {
     await task.save();
     emitVolunteerTaskUpdate(task);
 
-    const donation = await Donation.findById(task.donationId);
+    const donation = task.donationId ? await Donation.findById(task.donationId) : null;
     if (donation) await updateDonationStatus(donation, 'picked', 'Picked up by volunteer');
+    else if (task.foodRequestId) await FoodRequest.findByIdAndUpdate(task.foodRequestId, { status: 'out_for_delivery' });
   }
   res.redirect('/volunteer/dashboard');
 };
@@ -91,9 +97,9 @@ exports.postMarkPicked = async (req, res) => {
 // Delivery confirmation — OTP + feedback collection
 // ---------------------------------------------------------------------------
 exports.getDeliverForm = async (req, res) => {
-  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' }).populate(
-    'donationId'
-  );
+  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' })
+    .populate('donationId')
+    .populate('foodRequestId');
   if (!task) {
     return res.status(404).render('error', { title: 'Not found', message: 'Task not found or not ready for delivery.' });
   }
@@ -101,9 +107,9 @@ exports.getDeliverForm = async (req, res) => {
 };
 
 exports.postDeliver = async (req, res) => {
-  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' }).populate(
-    'donationId'
-  );
+  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' })
+    .populate('donationId')
+    .populate('foodRequestId');
   if (!task) {
     return res.status(404).render('error', { title: 'Not found', message: 'Task not found or not ready for delivery.' });
   }
@@ -138,12 +144,17 @@ exports.postDeliver = async (req, res) => {
   emitVolunteerTaskUpdate(task);
 
   const donation = task.donationId;
-  donation.deliveryProofPhoto = proofPhotoPath;
-  await updateDonationStatus(donation, 'delivered', 'Delivered and confirmed by OTP');
+  if (donation) {
+    donation.deliveryProofPhoto = proofPhotoPath;
+    await updateDonationStatus(donation, 'delivered', 'Delivered and confirmed by OTP');
+  } else if (task.foodRequestId) {
+    await FoodRequest.findByIdAndUpdate(task.foodRequestId._id, { status: 'delivered' });
+  }
 
   // Triggers volunteer completedTasks/avgRating recalculation (see Feedback model post-save hook)
   await Feedback.create({
-    donationId: donation._id,
+    donationId: donation ? donation._id : null,
+    foodRequestId: task.foodRequestId ? task.foodRequestId._id : null,
     taskId: task._id,
     rating: Number(rating),
     category,

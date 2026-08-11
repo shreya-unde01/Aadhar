@@ -1,4 +1,4 @@
-const { User, Donor, Volunteer } = require('../models/User');
+const { User, Donor, Volunteer, Elderly } = require('../models/User');
 const { signToken, COOKIE_NAME, getCookieOptions } = require('../utils/jwt');
 const verifyRecaptcha = require('../utils/verifyRecaptcha');
 const { LIONS_CLUB_ADMIN, getLionsClubAdmin } = require('../utils/lionsClub');
@@ -68,7 +68,7 @@ exports.postSignup = async (req, res) => {
   }
 
   try {
-    const { name, email, phone, password, role, donorType, organizationName, skills } = req.body;
+    const { name, email, phone, password, role, donorType, organizationName, skills, partnerName, homeAddress } = req.body;
 
     const captchaOk = await verifyRecaptcha(req.body['g-recaptcha-response']);
     if (!captchaOk) {
@@ -115,6 +115,15 @@ exports.postSignup = async (req, res) => {
         ngoId: lionsClubAdmin._id,
         skills: skills ? String(skills).split(',').map((s) => s.trim()).filter(Boolean) : [],
         isApproved: false, // requires NGO admin approval before taking tasks
+      });
+    } else if (role === 'elderly') {
+      user = await Elderly.create({
+        name,
+        email,
+        phone,
+        passwordHash,
+        partnerName,
+        homeAddress,
       });
     } else {
       const msg = 'Invalid role selected.';

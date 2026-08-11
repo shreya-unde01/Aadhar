@@ -7,7 +7,7 @@
     <div class="form-page-head">
       <h1>Confirm Delivery</h1>
       <p class="muted">
-        <%= task.donationId.donationCode %> · <span style="text-transform:capitalize;"><%= task.donationId.type %></span>
+        <%= task.donationId ? task.donationId.donationCode : 'Elderly household food request' %> · <span style="text-transform:capitalize;"><%= task.donationId ? task.donationId.type : 'food delivery' %></span>
         · Delivering to <%= task.deliveryLocation.address %>
       </p>
     </div>

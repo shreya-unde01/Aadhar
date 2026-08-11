@@ -19,12 +19,24 @@
           <a href="/donor/donations" class="nav-link">My Donations</a>
           <a href="/donor/leaderboard" class="nav-link">Leaderboard</a>
         <% } else if (currentUser.role === 'ngo_admin') { %>
+<<<<<<< HEAD
           <a href="/admin/donations" class="nav-link">Donations</a>
           <a href="/admin/volunteers" class="nav-link">Volunteers</a>
           <a href="/admin/logistics" class="nav-link">Logistics</a>
           <a href="/admin/reports" class="nav-link">Reports</a>
         <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
           <a href="/volunteer/feedback" class="nav-link">My Ratings</a>
+=======
+          <a href="/admin/donations">Donations</a>
+          <a href="/admin/food-requests">Food requests</a>
+          <a href="/admin/volunteers">Volunteers</a>
+          <a href="/admin/logistics">Logistics</a>
+          <a href="/admin/reports">Reports</a>
+        <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
+          <a href="/volunteer/feedback">My Ratings</a>
+        <% } else if (currentUser.role === 'elderly') { %>
+          <a href="/elderly/requests/new">Request food</a>
+>>>>>>> b2ed09e13870bba9bd72f1c6382c75d7064fb611
         <% } %>
         <div class="user-profile-pill">
           <span class="avatar-dot"></span>
