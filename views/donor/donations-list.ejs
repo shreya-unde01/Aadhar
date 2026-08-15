@@ -4,6 +4,11 @@
 <body>
   <%- include('../partials/navbar') %>
   <main class="container list-page">
+    <div class="action-bar mb-lg">
+      <a href="/" class="btn btn-outline btn-sm">← Home</a>
+      <a href="/donor/dashboard" class="btn btn-outline btn-sm">Back to Dashboard</a>
+    </div>
+
     <div class="form-page-head">
       <h1>My Donations</h1>
       <p class="muted">Track every donation you've made, from submission to delivery.</p>
@@ -46,6 +51,14 @@
   <%- include('../partials/footer') %>
 
   <style>
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-lg);
+    }
+    .mb-lg { margin-bottom: var(--space-lg); }
     .list-page { padding: var(--space-xl) 0; }
     .filter-tabs { display: flex; gap: var(--space-xs); flex-wrap: wrap; margin-bottom: var(--space-lg); }
     .filter-tab { padding: 0.4em 1em; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink-soft); }

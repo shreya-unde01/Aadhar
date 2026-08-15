@@ -103,7 +103,7 @@ exports.postDonation = async (req, res) => {
     });
 
     emitNewDonation(donation);
-    res.redirect(`/donor/donations/${donation._id}?created=1`);
+    res.redirect('/?donation=success');
   } catch (err) {
     console.error('[donor] create donation error:', err);
     res.status(500).render('donor/donation-form', {
@@ -182,7 +182,7 @@ exports.postBulkDonation = async (req, res) => {
       emitNewDonation(donation);
     }
 
-    res.redirect(`/donor/donations?bulkGroupId=${bulkGroupId}&created=${created.length}`);
+    res.redirect('/?donation=success');
   } catch (err) {
     console.error('[donor] bulk donation error:', err);
     res.status(400).render('donor/donation-bulk-form', {

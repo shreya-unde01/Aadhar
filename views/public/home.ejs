@@ -17,8 +17,8 @@
           Lions Club connects generous donors and passionate volunteers so that what you give — a meal, a warm blanket, or your valuable time — directly reaches people in need, with real-time tracking.
         </p>
         <div class="hero-ctas">
-          <a href="/signup" class="btn btn-primary btn-lg">Donate Now →</a>
-          <a href="/signup" class="btn btn-secondary btn-lg">Join as Volunteer</a>
+          <a href="/signup?role=donor" class="btn btn-primary btn-lg">Donate Now →</a>
+          <a href="/signup?role=volunteer" class="btn btn-secondary btn-lg">Join as Volunteer</a>
           <a href="/admin/login" class="btn btn-outline btn-lg">Admin Login</a>
         </div>
       </div>
@@ -73,6 +73,51 @@
     </div>
   </section>
 
+  <% if (donationSuccess) { %>
+    <section class="section compact-section">
+      <div class="container">
+        <div class="alert alert-success donation-success-banner" role="status" aria-live="polite">
+          <div>
+            <strong>Your donation has been successfully submitted.</strong>
+            <div class="mt-sm">Thank you for helping us serve families with dignity and care.</div>
+          </div>
+          <a href="/" class="btn btn-primary btn-sm">Return to Home</a>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <section class="section pt-0">
+    <div class="container">
+      <div class="section-head text-center mx-auto">
+        <span class="badge-tag">Choose Your Path</span>
+        <h2>Start with the action that fits your support</h2>
+        <p class="muted">Whether you want to give food, volunteer your time, or manage operations, AADHAR makes it simple.</p>
+      </div>
+
+      <div class="action-grid">
+        <a href="/signup?role=donor" class="action-card action-card-primary">
+          <span class="action-icon">🍲</span>
+          <h3>Donate Now</h3>
+          <p>Share food or essentials and schedule a pickup in just a few steps.</p>
+          <span class="action-link">Start donating →</span>
+        </a>
+        <a href="/signup?role=volunteer" class="action-card action-card-secondary">
+          <span class="action-icon">🚲</span>
+          <h3>Join as Volunteer</h3>
+          <p>Accept nearby pickups, deliver items safely, and help families receive support faster.</p>
+          <span class="action-link">Become a volunteer →</span>
+        </a>
+        <a href="/admin/login" class="action-card action-card-muted">
+          <span class="action-icon">🛡️</span>
+          <h3>Admin Login</h3>
+          <p>Access the Lions Club admin dashboard to manage volunteers, logistics, and donations.</p>
+          <span class="action-link">Open admin portal →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- ================= THREE PILLARS ================= -->
   <section class="section">
     <div class="container">
@@ -87,13 +132,13 @@
           <div class="pillar-icon-wrap">🍲</div>
           <h3>Donate Food & Essentials</h3>
           <p>Share surplus meals, clothes, medicine, books, or financial contributions. Schedule quick pickup windows with local volunteers.</p>
-          <a href="/signup" class="pillar-link">Start donating <span class="arrow">→</span></a>
+          <a href="/signup?role=donor" class="pillar-link">Start donating <span class="arrow">→</span></a>
         </div>
         <div class="pillar-card">
           <div class="pillar-icon-wrap">🚲</div>
           <h3>Volunteer & Deliver</h3>
           <p>Accept nearby pickup requests, deliver directly to verified beneficiaries or community hubs, and upload instant handoff confirmations.</p>
-          <a href="/signup" class="pillar-link">Join as volunteer <span class="arrow">→</span></a>
+          <a href="/signup?role=volunteer" class="pillar-link">Join as volunteer <span class="arrow">→</span></a>
         </div>
         <div class="pillar-card">
           <div class="pillar-icon-wrap">📍</div>
@@ -312,6 +357,17 @@
       100% { box-shadow: 0 0 0 0 rgba(47, 122, 79, 0); }
     }
 
+    .compact-section { padding-top: var(--space-lg); }
+    .pt-0 { padding-top: 0; }
+    .donation-success-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      padding: var(--space-lg);
+      margin-bottom: 0;
+    }
+    .mt-sm { margin-top: var(--space-xs); }
     .section { padding: var(--space-2xl) 0; }
     .section-head { max-width: 64ch; margin-bottom: var(--space-xl); }
     .badge-tag {
@@ -327,6 +383,38 @@
       margin-bottom: var(--space-xs);
     }
     .mx-auto { margin-left: auto; margin-right: auto; }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .action-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl) var(--space-lg);
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
+      color: var(--color-ink);
+    }
+    .action-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary);
+    }
+    .action-card-primary { background: linear-gradient(180deg, #fff8f2 0%, #ffffff 100%); }
+    .action-card-secondary { background: linear-gradient(180deg, #effaf3 0%, #ffffff 100%); }
+    .action-card-muted { background: linear-gradient(180deg, #f9f5ff 0%, #ffffff 100%); }
+    .action-icon { font-size: 2rem; }
+    .action-card h3 { margin-bottom: 0; }
+    .action-card p { margin-bottom: 0; }
+    .action-link { margin-top: auto; font-weight: 700; color: var(--color-primary); }
 
     .pillar-grid {
       display: grid;
@@ -508,10 +596,11 @@
       .hero-copy h1 { max-width: 100%; }
       .hero-sub { max-width: 100%; margin-left: auto; margin-right: auto; }
       .hero-ctas { justify-content: center; }
-      .pillar-grid, .testimonial-grid { grid-template-columns: 1fr; }
+      .action-grid, .pillar-grid, .testimonial-grid { grid-template-columns: 1fr; }
       .stat-grid-public { grid-template-columns: repeat(2, 1fr); }
       .stats-section { margin: 0; }
       .final-cta-card { flex-direction: column; text-align: center; }
+      .donation-success-banner { flex-direction: column; align-items: flex-start; }
     }
   </style>
 

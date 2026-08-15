@@ -7,7 +7,11 @@ router.get(
   '/',
   asyncHandler(async (req, res) => {
     const stats = await getPublicStats();
-    res.render('public/home', { title: 'Home', stats });
+    res.render('public/home', {
+      title: 'Home',
+      stats,
+      donationSuccess: req.query.donation === 'success',
+    });
   })
 );
 

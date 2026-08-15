@@ -26,11 +26,13 @@ function renderLoginWithErrors(req, res, messages) {
 
 // GET /signup
 exports.getSignup = async (req, res) => {
+  const selectedRole = ['donor', 'volunteer', 'elderly'].includes(req.query.role) ? req.query.role : 'donor';
   res.render('auth/signup', {
     title: 'Sign Up',
     errors: null,
-    formData: {},
+    formData: { role: selectedRole },
     recaptchaSiteKey: process.env.RECAPTCHA_SITE_KEY,
+    selectedRole,
   });
 };
 

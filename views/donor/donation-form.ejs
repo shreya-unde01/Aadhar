@@ -4,6 +4,11 @@
 <body>
   <%- include('../partials/navbar') %>
   <main class="container form-page">
+    <div class="action-bar mb-lg">
+      <a href="/" class="btn btn-outline btn-sm">← Home</a>
+      <a href="/donor/donations" class="btn btn-outline btn-sm">Back to Donations</a>
+    </div>
+
     <div class="form-page-head">
       <span class="eyebrow" style="margin-bottom:0.4rem;">New Contribution</span>
       <h1>Add a Donation</h1>
@@ -78,7 +83,10 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-block btn-lg mt-lg">Submit Donation & Generate Tracking Code</button>
+      <div class="form-actions mt-lg">
+        <a href="/donor/donations" class="btn btn-outline">Cancel</a>
+        <button type="submit" class="btn btn-primary">Submit Donation & Generate Tracking Code</button>
+      </div>
     </form>
 
     <p class="text-center mt-lg"><a href="/donor/donations/bulk-new" class="btn btn-outline btn-sm">Donating multiple items at once? Use bulk mode →</a></p>
@@ -99,6 +107,20 @@
       font-size: var(--fs-body-sm);
     }
     .divider { border: none; border-top: 1px solid var(--color-border-subtle); margin: var(--space-lg) 0; }
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-lg);
+    }
+    .mb-lg { margin-bottom: var(--space-lg); }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
     .checkbox-field {
       display: flex;
       align-items: center;

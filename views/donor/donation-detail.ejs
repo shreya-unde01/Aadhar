@@ -9,6 +9,11 @@
       <div class="alert alert-success">Donation submitted! Save your tracking code: <strong><%= donation.donationCode %></strong></div>
     <% } %>
 
+    <div class="action-bar mb-lg">
+      <a href="/donor/donations" class="btn btn-outline btn-sm">← Back to Donations</a>
+      <a href="/" class="btn btn-outline btn-sm">Return to Home</a>
+    </div>
+
     <div class="detail-head">
       <div>
         <span class="muted" style="font-size: var(--fs-caption); letter-spacing: 0.04em; text-transform: uppercase;">Tracking Code</span>
@@ -96,6 +101,14 @@
   <%- include('../partials/footer') %>
 
   <style>
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-lg);
+    }
+    .mb-lg { margin-bottom: var(--space-lg); }
     .detail-page { padding: var(--space-xl) 0; }
     .detail-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
     .pipeline { display: flex; align-items: center; }

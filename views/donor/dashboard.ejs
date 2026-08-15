@@ -112,18 +112,18 @@
   <style>
     .donor-dash { padding: var(--space-xl) 0; }
     .dash-welcome-banner {
-      background: var(--color-surface);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(253, 246, 238, 0.96) 100%);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-xl);
       padding: var(--space-xl);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: var(--space-md);
       flex-wrap: wrap;
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-md);
     }
-    .dash-welcome-copy h1 { margin-bottom: var(--space-xs); font-size: 1.8rem; }
+    .dash-welcome-copy h1 { margin-bottom: var(--space-xs); font-size: clamp(2rem, 2.4vw, 2.7rem); }
     .dash-meta-row { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; }
     .rank-pill {
       background: var(--color-surface-alt);
@@ -136,15 +136,15 @@
     .donor-dash-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
     .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
     .stat-card {
-      background: var(--color-surface);
+      background: linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
       border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       padding: var(--space-lg) var(--space-md);
       text-align: center;
       box-shadow: var(--shadow-sm);
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
     }
-    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--color-primary-light); }
     .stat-icon { font-size: 1.6rem; margin-bottom: var(--space-xs); }
     .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
     .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); font-weight: 600; }

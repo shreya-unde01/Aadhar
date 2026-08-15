@@ -8,14 +8,14 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.6rem;
+  padding: 0.75rem 1.5rem;
   border-radius: var(--radius-full);
-  font-weight: 600;
+  font-weight: 700;
   font-size: var(--fs-body-sm);
   letter-spacing: 0.01em;
   border: 1.5px solid transparent;
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
   white-space: nowrap;
   text-decoration: none;
   position: relative;
@@ -24,13 +24,16 @@
 .btn::after {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(255, 255, 255, 0.15);
+  inset: 0;
+  background: rgba(255, 255, 255, 0.12);
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
 .btn:hover::after { opacity: 1; }
-.btn:active { transform: scale(0.97); }
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn:focus-visible {
+  box-shadow: 0 0 0 4px rgba(227, 93, 37, 0.16);
+}
 
 .btn-primary {
   background: var(--gradient-primary);
@@ -39,7 +42,7 @@
 }
 .btn-primary:hover {
   background: var(--gradient-primary-glow);
-  box-shadow: 0 12px 32px -4px rgba(227, 93, 37, 0.45);
+  box-shadow: 0 16px 30px -10px rgba(227, 93, 37, 0.42);
   transform: translateY(-2px);
 }
 
@@ -50,7 +53,6 @@
 }
 .btn-secondary:hover {
   background: linear-gradient(135deg, #378b5c 0%, #1e5937 100%);
-  box-shadow: 0 12px 32px -4px rgba(47, 122, 79, 0.45);
   transform: translateY(-2px);
 }
 
@@ -65,6 +67,13 @@
   color: var(--color-primary) !important;
   background: var(--color-primary-tint);
   transform: translateY(-1px);
+}
+
+.btn[disabled], .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .btn-block { width: 100%; }
@@ -168,19 +177,19 @@
   box-shadow: var(--shadow-sm);
 }
 .alert-error {
-  background: #fdf0ee;
-  border-color: #f7c5be;
+  background: #fff1ee;
+  border-color: #f6c7bc;
   color: var(--color-danger);
 }
 .alert-success {
-  background: var(--color-secondary-tint);
-  border-color: #b7ddc4;
+  background: linear-gradient(180deg, #eefaf1 0%, #f4fbf5 100%);
+  border-color: #bfe1c8;
   color: var(--color-secondary-dark);
 }
 
 /* ---- Cards & Glass Surfaces ---- */
 .card {
-  background: var(--color-surface);
+  background: linear-gradient(180deg, #ffffff 0%, #fffdfb 100%);
   border-radius: var(--radius-lg);
   border: 1px solid var(--color-border);
   padding: var(--space-lg);
@@ -200,6 +209,12 @@
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
   box-shadow: var(--shadow-md);
+}
+
+.card h2,
+.card h3,
+.card h4 {
+  color: var(--color-ink);
 }
 
 /* ---- Badges / status pills with pulse dot ---- */

@@ -10,6 +10,7 @@
       <span></span><span></span><span></span>
     </button>
     <nav class="site-navbar-links" id="site-nav-links">
+      <a href="/" class="nav-link">Home</a>
       <a href="/impact" class="nav-link">Impact</a>
       <% if (typeof currentUser !== 'undefined' && currentUser) { %>
         <% const roleHome = currentUser.role === 'ngo_admin' ? '/admin/dashboard' : '/' + currentUser.role + '/dashboard'; %>
@@ -19,24 +20,15 @@
           <a href="/donor/donations" class="nav-link">My Donations</a>
           <a href="/donor/leaderboard" class="nav-link">Leaderboard</a>
         <% } else if (currentUser.role === 'ngo_admin') { %>
-<<<<<<< HEAD
           <a href="/admin/donations" class="nav-link">Donations</a>
+          <a href="/admin/food-requests" class="nav-link">Food requests</a>
           <a href="/admin/volunteers" class="nav-link">Volunteers</a>
           <a href="/admin/logistics" class="nav-link">Logistics</a>
           <a href="/admin/reports" class="nav-link">Reports</a>
         <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
           <a href="/volunteer/feedback" class="nav-link">My Ratings</a>
-=======
-          <a href="/admin/donations">Donations</a>
-          <a href="/admin/food-requests">Food requests</a>
-          <a href="/admin/volunteers">Volunteers</a>
-          <a href="/admin/logistics">Logistics</a>
-          <a href="/admin/reports">Reports</a>
-        <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
-          <a href="/volunteer/feedback">My Ratings</a>
         <% } else if (currentUser.role === 'elderly') { %>
-          <a href="/elderly/requests/new">Request food</a>
->>>>>>> b2ed09e13870bba9bd72f1c6382c75d7064fb611
+          <a href="/elderly/requests/new" class="nav-link">Request food</a>
         <% } %>
         <div class="user-profile-pill">
           <span class="avatar-dot"></span>
@@ -56,10 +48,10 @@
 
 <style>
   .site-navbar {
-    border-bottom: 1px solid var(--glass-border);
-    background: rgba(255, 250, 244, 0.88);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(235, 220, 208, 0.8);
+    background: rgba(255, 250, 244, 0.8);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -81,6 +73,7 @@
     font-size: 1.25rem;
     color: var(--color-ink);
     transition: transform var(--transition-fast);
+    letter-spacing: -0.02em;
   }
   .site-navbar-logo:hover {
     transform: translateY(-1px);
@@ -101,22 +94,27 @@
   .site-navbar-links { display: flex; align-items: center; gap: var(--space-md); font-size: var(--fs-body-sm); font-weight: 600; }
   .nav-link {
     color: var(--color-ink-soft);
-    padding: 0.35rem 0.6rem;
-    border-radius: var(--radius-sm);
-    transition: color var(--transition-fast), background var(--transition-fast);
+    padding: 0.5rem 0.8rem;
+    border-radius: var(--radius-full);
+    transition: color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast);
   }
-  .nav-link:hover { color: var(--color-primary); background: var(--color-primary-tint); }
+  .nav-link:hover {
+    color: var(--color-primary);
+    background: var(--color-primary-tint);
+    transform: translateY(-1px);
+  }
   .user-profile-pill {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--color-surface);
+    background: linear-gradient(180deg, #ffffff 0%, #fffaf6 100%);
     border: 1px solid var(--color-border);
-    padding: 0.3rem 0.8rem;
+    padding: 0.42rem 0.8rem;
     border-radius: var(--radius-full);
     font-size: var(--fs-caption);
-    font-weight: 600;
+    font-weight: 700;
     box-shadow: var(--shadow-sm);
+    color: var(--color-ink);
   }
   .avatar-dot {
     width: 8px;
