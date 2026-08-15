@@ -1,5 +1,5 @@
 const FoodRequest = require('../models/FoodRequest');
-const { Elderly } = require('../models/User');
+const { Elderly, Volunteer } = require('../models/User');
 
 exports.getDashboard = async (req, res) => {
   const [household, requests] = await Promise.all([
@@ -54,4 +54,23 @@ exports.postRequest = async (req, res) => {
       formData,
     });
   }
+};
+
+exports.getRequestDetail = async (req, res) => {
+  const request = await FoodRequest.findOne({
+    _id: req.params.id,
+    householdId: req.user._id,
+  }).populate('assignedVolunteerId', 'name phone avgRating');
+
+  if (!request) {
+    return res.status(404).render('error', {
+      title: 'Not found',
+      message: 'Food request not found.',
+    });
+  }
+
+  res.render('elderly/request-detail', {
+    title: 'Track Your Food Request',
+    request,
+  });
 };

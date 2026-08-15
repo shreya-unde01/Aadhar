@@ -8,6 +8,7 @@ const { Volunteer, NGOAdmin, Elderly } = require('../models/User');
 const { haversineDistanceKm } = require('../utils/geo');
 const { getDistanceMatrix } = require('../utils/distanceMatrix');
 const { updateDonationStatus } = require('../utils/donationStatusService');
+const { updateFoodRequestStatus } = require('../utils/foodRequestStatusService');
 const { emitTaskAssigned, emitEmergencyAlert } = require('../sockets');
 
 const pickupDateSort = { 'timeSlot.date': 1, createdAt: 1 };
@@ -187,7 +188,7 @@ exports.postAssignVolunteer = async (req, res) => {
 // Elderly household food requests
 // ---------------------------------------------------------------------------
 exports.getFoodRequests = async (req, res) => {
-  const requests = await FoodRequest.find({}).sort({ createdAt: -1 }).populate('householdId', 'name phone');
+  const requests = await FoodRequest.find({}).sort({ createdAt: -1 }).populate('householdId', 'name phone').populate('assignedVolunteerId', 'name');
   res.render('ngo/food-requests', { title: 'Elderly Food Requests', requests });
 };
 
@@ -211,9 +212,30 @@ exports.postAssignFoodRequest = async (req, res) => {
   });
   if (!volunteer) return res.redirect(`/admin/food-requests/${request._id}/assign`);
 
+  // Prevent duplicate assignment
+  if (request.assignedVolunteerId && request.status !== 'cancelled' && request.status !== 'delivered') {
+    return res.status(400).render('error', {
+      title: 'Already assigned',
+      message: 'This food request is already assigned to a volunteer. Cancel or reassign the existing task first.',
+    });
+  }
+
+  // Create the task linking the food request, volunteer, and delivery details
   const task = await Task.createForFoodRequest({ request, volunteerId: volunteer._id, ngoId: req.user._id });
-  request.status = 'assigned';
-  await request.save();
+
+  // Set assignment tracking fields
+  request.assignedVolunteerId = volunteer._id;
+  request.assignedByNgoId = req.user._id;
+
+  // Transition to assigned status with proper history tracking
+  await updateFoodRequestStatus(
+    request,
+    'assigned',
+    `Assigned to ${volunteer.name}`,
+    req.user._id,
+    'ngo_admin'
+  );
+
   emitTaskAssigned(task, volunteer);
   res.redirect('/admin/food-requests');
 };

@@ -16,19 +16,20 @@
           <article class="card request-card">
             <div class="section-heading">
               <strong><%= request.householdId ? request.householdId.name : 'Household' %></strong>
-              <span class="pill pill-<%= request.status === 'out_for_delivery' ? 'assigned' : request.status %>"><%= request.status.replace('_', ' ') %></span>
+              <span class="pill pill-<%= request.status === 'out_for_delivery' ? 'assigned' : request.status %>"><%= request.status.replace(/_/g, ' ') %></span>
             </div>
             <p><strong>Needs:</strong> <%= request.requirements %></p>
             <dl class="detail-list">
               <dt>Delivery</dt><dd><%= request.deliveryAddress %></dd>
               <dt>Phone</dt><dd><%= request.householdId ? request.householdId.phone : request.phone %></dd>
               <% if (request.deliveryNote) { %><dt>Note</dt><dd><%= request.deliveryNote %></dd><% } %>
+              <% if (request.assignedVolunteerId) { %><dt>Volunteer</dt><dd><%= request.assignedVolunteerId.name || 'Assigned' %></dd><% } %>
             </dl>
             <div class="request-actions">
               <% if (request.status === 'pending') { %>
-                <a href="/admin/food-requests/<%= request._id %>/assign" class="btn btn-primary btn-sm">Arrange delivery</a>
+                <a href="/admin/food-requests/<%= request._id %>/assign" class="btn btn-primary btn-sm">Assign volunteer</a>
               <% } else { %>
-                <span class="muted">Delivery arranged</span>
+                <span class="muted">Status: <strong><%= request.status.replace(/_/g, ' ') %></strong></span>
               <% } %>
               <small class="muted"><%= request.createdAt.toLocaleDateString() %></small>
             </div>

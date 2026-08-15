@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Track Your Food Request' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container elderly-page">
+    <div class="page-heading">
+      <div>
+        <a href="/elderly/dashboard" style="color: var(--color-muted); text-decoration: none; font-size: 0.95rem;">← Back to dashboard</a>
+        <h1>Track Your Request</h1>
+        <p class="muted">Food request #<%= request._id.toString().slice(-6).toUpperCase() %></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-heading">
+        <strong>What You Requested</strong>
+      </div>
+      <dl class="detail-list">
+        <dt>Food needs</dt>
+        <dd><%= request.requirements %></dd>
+        <dt>Delivery address</dt>
+        <dd><%= request.deliveryAddress %></dd>
+        <% if (request.deliveryNote) { %>
+          <dt>Special instructions</dt>
+          <dd><%= request.deliveryNote %></dd>
+        <% } %>
+        <dt>Submitted</dt>
+        <dd><%= new Date(request.createdAt).toLocaleString() %></dd>
+      </dl>
+    </div>
+
+    <div class="card mt-lg">
+      <div class="section-heading">
+        <strong>Delivery Progress</strong>
+      </div>
+
+      <div class="timeline">
+        <!-- PENDING -->
+        <div class="timeline-item <%= request.status === 'pending' || request.statusHistory.some(s => s.to === 'pending') ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.status === 'pending' || request.statusHistory.some(s => s.to === 'pending')) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>Request Submitted</strong>
+            <% if (request.createdAt) { %>
+              <span class="muted"><%= new Date(request.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- ASSIGNED -->
+        <div class="timeline-item <%= request.status !== 'pending' ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.assignedAt) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>Volunteer Assigned</strong>
+            <% if (request.assignedAt) { %>
+              <span class="muted"><%= new Date(request.assignedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+              <% if (request.assignedVolunteerId) { %>
+                <div style="margin-top: 0.5rem; padding: 0.75rem; background: var(--color-success-tint); border-radius: var(--radius-md);">
+                  <div><strong><%= request.assignedVolunteerId.name %></strong></div>
+                  <% if (request.assignedVolunteerId.avgRating > 0) { %>
+                    <div class="muted" style="font-size: 0.9rem;">⭐ <%= request.assignedVolunteerId.avgRating.toFixed(1) %></div>
+                  <% } %>
+                </div>
+              <% } %>
+            <% } else { %>
+              <p class="muted">Looking for a volunteer...</p>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- ACCEPTED -->
+        <div class="timeline-item <%= request.status !== 'assigned' && request.status !== 'pending' ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.acceptedAt) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>Volunteer Accepted</strong>
+            <% if (request.acceptedAt) { %>
+              <span class="muted"><%= new Date(request.acceptedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% } else { %>
+              <p class="muted">Waiting for confirmation...</p>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- PICKUP REACHED -->
+        <div class="timeline-item <%= request.pickupReachedAt ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.pickupReachedAt) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>Volunteer Reached Pickup Location</strong>
+            <% if (request.pickupReachedAt) { %>
+              <span class="muted"><%= new Date(request.pickupReachedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% } else { %>
+              <p class="muted">Pending...</p>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- PICKED UP -->
+        <div class="timeline-item <%= request.pickedAt ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.pickedAt) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>Food Picked Up</strong>
+            <% if (request.pickedAt) { %>
+              <span class="muted"><%= new Date(request.pickedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% } else { %>
+              <p class="muted">Pending...</p>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- IN TRANSIT -->
+        <div class="timeline-item <%= request.inTransitAt ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.inTransitAt) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>On The Way To You</strong>
+            <% if (request.inTransitAt) { %>
+              <span class="muted"><%= new Date(request.inTransitAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+            <% } else { %>
+              <p class="muted">Pending...</p>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- DELIVERED -->
+        <div class="timeline-item <%= request.deliveredAt ? 'completed' : 'pending' %>">
+          <div class="timeline-marker">
+            <% if (request.deliveredAt) { %>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            <% } else { %>
+              <div class="timeline-dot"></div>
+            <% } %>
+          </div>
+          <div class="timeline-content">
+            <strong>Delivered</strong>
+            <% if (request.deliveredAt) { %>
+              <span class="muted"><%= new Date(request.deliveredAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+              <p class="muted" style="margin-top: 0.5rem;">Thank you for using AADHAR! 🙏</p>
+            <% } else { %>
+              <p class="muted">Expected soon...</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/footer') %>
+
+  <style>
+    .elderly-page { padding: var(--space-xl) 0; }
+    .page-heading { margin-bottom: var(--space-lg); }
+    .detail-list { display: grid; grid-template-columns: auto 1fr; gap: var(--space-xs) var(--space-sm); margin: var(--space-md) 0; }
+    .detail-list dt { color: var(--color-muted); font-weight: 600; }
+    .detail-list dd { margin: 0; }
+
+    .timeline { position: relative; margin-top: var(--space-lg); }
+    .timeline::before { content: ''; position: absolute; left: 11px; top: 35px; bottom: 0; width: 2px; background: var(--color-border); }
+
+    .timeline-item { position: relative; padding-left: 48px; padding-bottom: var(--space-lg); }
+    .timeline-item:last-child { padding-bottom: 0; }
+
+    .timeline-marker { position: absolute; left: 0; top: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 50%; }
+    .timeline-item.completed .timeline-marker { background: var(--color-success); color: white; }
+    .timeline-item.pending .timeline-marker { background: white; border: 2px solid var(--color-border); }
+    .timeline-dot { width: 8px; height: 8px; background: var(--color-border); border-radius: 50%; }
+
+    .timeline-content { padding: 0; }
+    .timeline-content strong { display: block; margin-bottom: 0.25rem; }
+    .timeline-content .muted { display: block; font-size: 0.9rem; }
+    .timeline-item.pending .timeline-content strong { color: var(--color-muted); }
+    .timeline-item.completed .timeline-content strong { color: var(--color-success); }
+
+    .timeline-item:hover { background: transparent; }
+  </style>
+</body>
+</html>

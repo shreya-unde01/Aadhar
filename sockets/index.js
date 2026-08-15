@@ -76,6 +76,21 @@ function emitDonationStatus(donation) {
   ioInstance.to('role:ngo_admin').emit('donation:status', payload);
 }
 
+/** Food request status changed — used by elderly tracking pages, NGO's food-requests list, and volunteer task updates. */
+function emitFoodRequestStatus(foodRequest) {
+  if (!ioInstance) return;
+  const payload = {
+    foodRequestId: foodRequest._id.toString(),
+    status: foodRequest.status,
+  };
+  ioInstance.to(`food-request:${foodRequest._id}`).emit('food-request:status', payload);
+  ioInstance.to(`user:${foodRequest.householdId}`).emit('food-request:status', payload);
+  ioInstance.to('role:ngo_admin').emit('food-request:status', payload);
+  if (foodRequest.assignedVolunteerId) {
+    ioInstance.to(`user:${foodRequest.assignedVolunteerId}`).emit('food-request:status', payload);
+  }
+}
+
 /** A brand-new donation was submitted — used to live-bump NGO overview counts. */
 function emitNewDonation(donation) {
   if (!ioInstance) return;
@@ -140,6 +155,7 @@ module.exports = {
   initSockets,
   getIO,
   emitDonationStatus,
+  emitFoodRequestStatus,
   emitNewDonation,
   emitTaskAssigned,
   emitVolunteerTaskUpdate,

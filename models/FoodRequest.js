@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const REQUEST_STATUSES = ['pending', 'assigned', 'out_for_delivery', 'delivered', 'cancelled'];
+const REQUEST_STATUSES = ['pending', 'assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit', 'delivered', 'cancelled'];
 
 const foodRequestSchema = new mongoose.Schema(
   {
@@ -10,6 +10,30 @@ const foodRequestSchema = new mongoose.Schema(
     phone: { type: String, required: true, trim: true },
     status: { type: String, enum: REQUEST_STATUSES, default: 'pending', index: true },
     deliveryNote: { type: String, trim: true, maxlength: 500, default: '' },
+
+    // Assignment tracking
+    assignedVolunteerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    assignedByNgoId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+
+    // Lifecycle timestamps
+    assignedAt: { type: Date, default: null },
+    acceptedAt: { type: Date, default: null },
+    pickupReachedAt: { type: Date, default: null },
+    pickedAt: { type: Date, default: null },
+    inTransitAt: { type: Date, default: null },
+    deliveredAt: { type: Date, default: null },
+
+    // Complete status history for full transparency
+    statusHistory: [
+      {
+        from: { type: String, default: null },
+        to: { type: String, required: true },
+        timestamp: { type: Date, default: Date.now },
+        actor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+        actorRole: { type: String, default: null },
+        note: { type: String, default: '' },
+      },
+    ],
   },
   { timestamps: true }
 );

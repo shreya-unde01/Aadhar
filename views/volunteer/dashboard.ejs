@@ -63,18 +63,30 @@
                               <div class="card task-card">
                                 <div class="section-heading" style="margin-bottom: var(--space-xs);">
                                   <strong style="text-transform:capitalize; font-size:1.15rem;">
-                                    <%= d && d.type ? d.type : 'Food Donation' %>
+                                    <% if (d) { %>
+                                      <%= d.type %>
+                                    <% } else if (request) { %>
+                                      Elderly Food Request
+                                    <% } else { %>
+                                      Delivery Task
+                                    <% } %>
                                   </strong>
                                   <span class="pill pill-<%= t.status %>">
                                     <%= t.status.replace(/_/g, ' ') %>
                                   </span>
                                 </div>
-                                <p class="muted mb-0">
-                                  <%= d.quantity %>
-                                    <%= d.unit || '' %> · <span class="code-tag">
-                                        <%= d.donationCode %>
-                                      </span>
-                                </p>
+                                <% if (d) { %>
+                                  <p class="muted mb-0">
+                                    <%= d.quantity %>
+                                      <%= d.unit || '' %> · <span class="code-tag">
+                                          <%= d.donationCode %>
+                                        </span>
+                                  </p>
+                                <% } else if (request) { %>
+                                  <p class="muted mb-0">
+                                    <strong>Needs:</strong> <%= request.requirements %>
+                                  </p>
+                                <% } %>
 
                                 <dl class="detail-list mt-sm">
                                   <dt>📍 Pickup</dt>
@@ -85,11 +97,13 @@
                                   <dd>
                                     <%= t.deliveryLocation.address %>
                                   </dd>
-                                  <dt>🕒 Window</dt>
-                                  <dd>
-                                    <%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–
-                                        <%= d.timeSlot.endTime %>
-                                  </dd>
+                                  <% if (d && d.timeSlot) { %>
+                                    <dt>🕒 Window</dt>
+                                    <dd>
+                                      <%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–
+                                          <%= d.timeSlot.endTime %>
+                                    </dd>
+                                  <% } %>
                                 </dl>
 
                                 <% if (mapsEnabled) { %>

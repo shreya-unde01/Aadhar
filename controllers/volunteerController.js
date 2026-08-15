@@ -6,6 +6,7 @@ const FoodRequest = require('../models/FoodRequest');
 const { Volunteer } = require('../models/User');
 const { haversineDistanceKm } = require('../utils/geo');
 const { updateDonationStatus } = require('../utils/donationStatusService');
+const { updateFoodRequestStatus } = require('../utils/foodRequestStatusService');
 const { emitVolunteerTaskUpdate } = require('../sockets');
 
 // ---------------------------------------------------------------------------
@@ -52,6 +53,17 @@ exports.postAcceptTask = async (req, res) => {
     const donation = task.donationId ? await Donation.findById(task.donationId) : null;
     if (donation) {
       await updateDonationStatus(donation, 'accepted', 'Volunteer accepted the assignment');
+    } else if (task.foodRequestId) {
+      const foodRequest = await FoodRequest.findById(task.foodRequestId);
+      if (foodRequest) {
+        await updateFoodRequestStatus(
+          foodRequest,
+          'accepted',
+          'Volunteer accepted the assignment',
+          req.user._id,
+          'volunteer'
+        );
+      }
     }
   }
   res.redirect('/volunteer/dashboard');
@@ -74,7 +86,16 @@ exports.postRejectTask = async (req, res) => {
       donation.assignedByNgoId = null;
       await updateDonationStatus(donation, 'pending', 'Volunteer declined — needs reassignment');
     } else if (task.foodRequestId) {
-      await FoodRequest.findByIdAndUpdate(task.foodRequestId, { status: 'pending' });
+      const foodRequest = await FoodRequest.findById(task.foodRequestId);
+      if (foodRequest) {
+        await updateFoodRequestStatus(
+          foodRequest,
+          'pending',
+          'Volunteer declined — needs reassignment',
+          req.user._id,
+          'volunteer'
+        );
+      }
     }
   }
   res.redirect('/volunteer/dashboard');
@@ -94,6 +115,17 @@ exports.postMarkPickupReached = async (req, res) => {
     const donation = task.donationId ? await Donation.findById(task.donationId) : null;
     if (donation) {
       await updateDonationStatus(donation, 'pickup_reached', 'Volunteer reached pickup location');
+    } else if (task.foodRequestId) {
+      const foodRequest = await FoodRequest.findById(task.foodRequestId);
+      if (foodRequest) {
+        await updateFoodRequestStatus(
+          foodRequest,
+          'pickup_reached',
+          'Volunteer reached pickup location',
+          req.user._id,
+          'volunteer'
+        );
+      }
     }
   }
   res.redirect('/volunteer/dashboard');
@@ -111,7 +143,16 @@ exports.postMarkPicked = async (req, res) => {
     if (donation) {
       await updateDonationStatus(donation, 'picked', 'Picked up by volunteer');
     } else if (task.foodRequestId) {
-      await FoodRequest.findByIdAndUpdate(task.foodRequestId, { status: 'out_for_delivery' });
+      const foodRequest = await FoodRequest.findById(task.foodRequestId);
+      if (foodRequest) {
+        await updateFoodRequestStatus(
+          foodRequest,
+          'picked',
+          'Food picked up by volunteer',
+          req.user._id,
+          'volunteer'
+        );
+      }
     }
   }
   res.redirect('/volunteer/dashboard');
@@ -128,6 +169,17 @@ exports.postStartDelivery = async (req, res) => {
     const donation = task.donationId ? await Donation.findById(task.donationId) : null;
     if (donation) {
       await updateDonationStatus(donation, 'in_transit', 'Volunteer started the delivery route');
+    } else if (task.foodRequestId) {
+      const foodRequest = await FoodRequest.findById(task.foodRequestId);
+      if (foodRequest) {
+        await updateFoodRequestStatus(
+          foodRequest,
+          'in_transit',
+          'Volunteer started the delivery route',
+          req.user._id,
+          'volunteer'
+        );
+      }
     }
   }
   res.redirect('/volunteer/dashboard');
@@ -188,7 +240,16 @@ exports.postDeliver = async (req, res) => {
     donation.deliveryProofPhoto = proofPhotoPath;
     await updateDonationStatus(donation, 'delivered', 'Delivered and confirmed by OTP');
   } else if (task.foodRequestId) {
-    await FoodRequest.findByIdAndUpdate(task.foodRequestId._id, { status: 'delivered' });
+    const foodRequest = await FoodRequest.findById(task.foodRequestId._id);
+    if (foodRequest) {
+      await updateFoodRequestStatus(
+        foodRequest,
+        'delivered',
+        'Delivered and confirmed',
+        req.user._id,
+        'volunteer'
+      );
+    }
   }
 
   // Triggers volunteer completedTasks/avgRating recalculation (see Feedback model post-save hook)

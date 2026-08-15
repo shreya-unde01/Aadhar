@@ -30,7 +30,10 @@
                 <p class="muted"><%= request.deliveryAddress %></p>
                 <small class="muted"><%= request.createdAt.toLocaleDateString() %></small>
               </div>
-              <span class="pill pill-<%= request.status === 'out_for_delivery' ? 'assigned' : request.status %>"><%= request.status.replace('_', ' ') %></span>
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <span class="pill pill-<%= request.status === 'out_for_delivery' ? 'assigned' : request.status %>"><%= request.status.replace('_', ' ') %></span>
+                <a href="/elderly/requests/<%= request._id %>" class="link-more">Track →</a>
+              </div>
             </article>
           <% }) %>
         </div>
