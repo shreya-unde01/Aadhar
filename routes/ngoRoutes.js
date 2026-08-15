@@ -15,6 +15,11 @@ router.post('/donations/:id/toggle-urgent', asyncHandler(ngoController.postToggl
 router.get('/donations/:id/assign', asyncHandler(ngoController.getAssignDonation));
 router.post('/donations/:id/assign', asyncHandler(ngoController.postAssignVolunteer));
 
+// Elderly household food support
+router.get('/food-requests', asyncHandler(ngoController.getFoodRequests));
+router.get('/food-requests/:id/assign', asyncHandler(ngoController.getAssignFoodRequest));
+router.post('/food-requests/:id/assign', asyncHandler(ngoController.postAssignFoodRequest));
+
 // Volunteers
 router.get('/volunteers', asyncHandler(ngoController.getVolunteersList));
 router.get('/volunteers/:id', asyncHandler(ngoController.getVolunteerDetail));

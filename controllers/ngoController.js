@@ -3,7 +3,8 @@ const Task = require('../models/Task');
 const Report = require('../models/Report');
 const Feedback = require('../models/Feedback');
 const EmergencyAlert = require('../models/EmergencyAlert');
-const { Volunteer, NGOAdmin } = require('../models/User');
+const FoodRequest = require('../models/FoodRequest');
+const { Volunteer, NGOAdmin, Elderly } = require('../models/User');
 const { haversineDistanceKm } = require('../utils/geo');
 const { getDistanceMatrix } = require('../utils/distanceMatrix');
 const { updateDonationStatus } = require('../utils/donationStatusService');
@@ -24,7 +25,7 @@ exports.getOverview = async (req, res) => {
       EmergencyAlert.countDocuments({ isActive: true }),
     ]);
 
-  const recentDonations = await Donation.find({ ngoId }).sort({ createdAt: -1 }).limit(6).populate('donorId', 'name');
+  const recentDonations = await Donation.find({ ngoId }).sort({ urgent: -1, createdAt: -1 }).limit(6).populate('donorId', 'name');
 
   res.render('ngo/dashboard', {
     title: 'Lions Club Admin Dashboard',
@@ -115,7 +116,10 @@ exports.getAssignDonation = async (req, res) => {
     return a.distanceKm - b.distanceKm;
   });
 
-  const ngo = await NGOAdmin.findById(req.user._id);
+  const [ngo, elderlyCouples] = await Promise.all([
+    NGOAdmin.findById(req.user._id),
+    Elderly.find({ isActive: true }).select('name partnerName phone homeAddress').sort({ name: 1 }),
+  ]);
 
   res.render('ngo/donation-assign', {
     title: `Assign — ${donation.donationCode}`,
@@ -124,6 +128,7 @@ exports.getAssignDonation = async (req, res) => {
     hasCoords,
     rankingMethod,
     defaultDeliveryAddress: ngo?.organizationAddress || '',
+    elderlyCouples,
     errors: null,
   });
 };
@@ -132,10 +137,11 @@ exports.postAssignVolunteer = async (req, res) => {
   const donation = await Donation.findById(req.params.id);
   if (!donation) return res.status(404).render('error', { title: 'Not found', message: 'Donation not found.' });
 
-  const { volunteerId, deliveryAddress, deliveryLat, deliveryLng } = req.body;
+  const { volunteerId, elderlyId } = req.body;
   const volunteer = await Volunteer.findOne({ _id: volunteerId, ngoId: req.user._id, isApproved: true, isActive: true });
+  const elderlyCouple = await Elderly.findOne({ _id: elderlyId, isActive: true });
 
-  if (!volunteer || !deliveryAddress) {
+  if (!volunteer || !elderlyCouple) {
     return res.redirect(`/admin/donations/${donation._id}/assign`);
   }
 
@@ -143,9 +149,10 @@ exports.postAssignVolunteer = async (req, res) => {
     donation,
     volunteerId: volunteer._id,
     ngoId: req.user._id,
-    deliveryAddress,
-    deliveryLat: deliveryLat ? Number(deliveryLat) : null,
-    deliveryLng: deliveryLng ? Number(deliveryLng) : null,
+    beneficiaryId: elderlyCouple._id,
+    deliveryAddress: elderlyCouple.homeAddress,
+    deliveryLat: null,
+    deliveryLng: null,
   });
 
   donation.assignedVolunteerId = volunteer._id;
@@ -155,6 +162,41 @@ exports.postAssignVolunteer = async (req, res) => {
   emitTaskAssigned(task, volunteer);
 
   res.redirect('/admin/donations?status=assigned');
+};
+
+// ---------------------------------------------------------------------------
+// Elderly household food requests
+// ---------------------------------------------------------------------------
+exports.getFoodRequests = async (req, res) => {
+  const requests = await FoodRequest.find({}).sort({ createdAt: -1 }).populate('householdId', 'name phone');
+  res.render('ngo/food-requests', { title: 'Elderly Food Requests', requests });
+};
+
+exports.getAssignFoodRequest = async (req, res) => {
+  const request = await FoodRequest.findById(req.params.id).populate('householdId', 'name phone');
+  if (!request) return res.status(404).render('error', { title: 'Not found', message: 'Food request not found.' });
+
+  const volunteers = await Volunteer.find({ ngoId: req.user._id, isApproved: true, isActive: true, isAvailable: true });
+  res.render('ngo/food-request-assign', { title: 'Assign Food Delivery', request, volunteers });
+};
+
+exports.postAssignFoodRequest = async (req, res) => {
+  const request = await FoodRequest.findById(req.params.id);
+  if (!request) return res.status(404).render('error', { title: 'Not found', message: 'Food request not found.' });
+
+  const volunteer = await Volunteer.findOne({
+    _id: req.body.volunteerId,
+    ngoId: req.user._id,
+    isApproved: true,
+    isActive: true,
+  });
+  if (!volunteer) return res.redirect(`/admin/food-requests/${request._id}/assign`);
+
+  const task = await Task.createForFoodRequest({ request, volunteerId: volunteer._id, ngoId: req.user._id });
+  request.status = 'assigned';
+  await request.save();
+  emitTaskAssigned(task, volunteer);
+  res.redirect('/admin/food-requests');
 };
 
 // ---------------------------------------------------------------------------
@@ -198,7 +240,10 @@ exports.getVolunteerDetail = async (req, res) => {
   const volunteer = await Volunteer.findOne({ _id: req.params.id, ngoId: req.user._id });
   if (!volunteer) return res.status(404).render('error', { title: 'Not found', message: 'Volunteer not found.' });
 
-  const tasks = await Task.find({ volunteerId: volunteer._id }).sort({ createdAt: -1 }).populate('donationId', 'donationCode type quantity');
+  const tasks = await Task.find({ volunteerId: volunteer._id })
+    .sort({ createdAt: -1 })
+    .populate('donationId', 'donationCode type quantity')
+    .populate('foodRequestId', 'requirements');
   const feedback = await Feedback.find({ submittedByVolunteerId: volunteer._id }).sort({ createdAt: -1 }).limit(10);
 
   res.render('ngo/volunteer-detail', { title: volunteer.name, volunteer, tasks, feedback });
@@ -212,6 +257,8 @@ exports.getLogistics = async (req, res) => {
   const tasks = await Task.find({ ngoId: req.user._id, status: { $in: ['assigned', 'accepted', 'picked'] } })
     .sort({ createdAt: -1 })
     .populate('donationId', 'donationCode type quantity timeSlot urgent')
+    .populate('foodRequestId', 'requirements deliveryAddress')
+    .populate('beneficiaryId', 'name partnerName phone homeAddress')
     .populate('volunteerId', 'name phone');
 
   res.render('ngo/logistics', { title: 'Logistics', tasks });

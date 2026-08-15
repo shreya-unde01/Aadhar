@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Food Support' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container elderly-page">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">Your food support</p>
+        <h1>Welcome, <%= household.name %></h1>
+        <p class="muted">We will use your saved home address for delivery unless you update it on a request.</p>
+      </div>
+      <a href="/elderly/requests/new" class="btn btn-primary">Request food delivery</a>
+    </div>
+
+    <% if (typeof requested !== 'undefined' && requested) { %>
+      <div class="alert alert-success">Your food request has been received. The Lions Club team will review it shortly.</div>
+    <% } %>
+
+    <section class="card">
+      <div class="section-heading"><h2>Your requests</h2><span class="muted"><%= requests.length %> recent</span></div>
+      <% if (requests.length === 0) { %>
+        <p class="muted">There are no food requests yet. When you are ready, use the button above to ask for a delivery.</p>
+      <% } else { %>
+        <div class="request-list">
+          <% requests.forEach(function(request) { %>
+            <article class="request-row">
+              <div>
+                <strong><%= request.requirements %></strong>
+                <p class="muted"><%= request.deliveryAddress %></p>
+                <small class="muted"><%= request.createdAt.toLocaleDateString() %></small>
+              </div>
+              <span class="pill pill-<%= request.status === 'out_for_delivery' ? 'assigned' : request.status %>"><%= request.status.replace('_', ' ') %></span>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+  </main>
+  <%- include('../partials/footer') %>
+  <style>
+    .elderly-page { padding: var(--space-xl) 0; }
+    .page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-lg); }
+    .eyebrow { color: var(--color-primary); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: var(--fs-caption); margin-bottom: var(--space-xs); }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
+    .request-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); border-top: 1px solid var(--color-border); padding: var(--space-md) 0; }
+    .request-row:first-child { border-top: 0; }
+    .request-row p { margin: var(--space-xs) 0; }
+    @media (max-width: 620px) { .request-row { flex-direction: column; } }
+  </style>
+</body>
+</html>

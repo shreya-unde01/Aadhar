@@ -1,33 +1,53 @@
 <header class="site-navbar">
   <div class="container site-navbar-inner">
     <a href="/" class="site-navbar-logo">
-      <img src="/images/logo.svg" alt="Lions Club logo" class="site-navbar-logo-image" />
-      <span class="site-navbar-logo-text">Lions Club <span>— The Soul Serves</span></span>
+      <div class="logo-badge">
+        <img src="/images/logo.svg" alt="Lions Club logo" class="site-navbar-logo-image" />
+      </div>
+      <span class="site-navbar-logo-text">Lions Club <span class="logo-subtext">— The Soul Serves</span></span>
     </a>
-    <nav class="site-navbar-links">
-      <a href="/impact">Impact</a>
+    <button class="nav-toggle" id="nav-toggle-btn" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-navbar-links" id="site-nav-links">
+      <a href="/impact" class="nav-link">Impact</a>
       <% if (typeof currentUser !== 'undefined' && currentUser) { %>
         <% const roleHome = currentUser.role === 'ngo_admin' ? '/admin/dashboard' : '/' + currentUser.role + '/dashboard'; %>
-        <a href="<%= roleHome %>">Dashboard</a>
+        <a href="<%= roleHome %>" class="nav-link">Dashboard</a>
         <% if (currentUser.role === 'donor') { %>
-          <a href="/donor/donations/new">Donate</a>
-          <a href="/donor/donations">My Donations</a>
-          <a href="/donor/leaderboard">Leaderboard</a>
+          <a href="/donor/donations/new" class="nav-link">Donate</a>
+          <a href="/donor/donations" class="nav-link">My Donations</a>
+          <a href="/donor/leaderboard" class="nav-link">Leaderboard</a>
         <% } else if (currentUser.role === 'ngo_admin') { %>
+<<<<<<< HEAD
+          <a href="/admin/donations" class="nav-link">Donations</a>
+          <a href="/admin/volunteers" class="nav-link">Volunteers</a>
+          <a href="/admin/logistics" class="nav-link">Logistics</a>
+          <a href="/admin/reports" class="nav-link">Reports</a>
+        <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
+          <a href="/volunteer/feedback" class="nav-link">My Ratings</a>
+=======
           <a href="/admin/donations">Donations</a>
+          <a href="/admin/food-requests">Food requests</a>
           <a href="/admin/volunteers">Volunteers</a>
           <a href="/admin/logistics">Logistics</a>
           <a href="/admin/reports">Reports</a>
         <% } else if (currentUser.role === 'volunteer' && currentUser.isApproved) { %>
           <a href="/volunteer/feedback">My Ratings</a>
+        <% } else if (currentUser.role === 'elderly') { %>
+          <a href="/elderly/requests/new">Request food</a>
+>>>>>>> b2ed09e13870bba9bd72f1c6382c75d7064fb611
         <% } %>
-        <span class="site-navbar-user"><%= currentUser.name %></span>
+        <div class="user-profile-pill">
+          <span class="avatar-dot"></span>
+          <span class="site-navbar-user"><%= currentUser.name %></span>
+        </div>
         <form action="/logout" method="POST" class="inline-form">
           <button type="submit" class="btn btn-outline btn-sm">Log out</button>
         </form>
       <% } else { %>
-        <a href="/login">Log in</a>
-        <a href="/admin/login">Admin login</a>
+        <a href="/login" class="nav-link">Log in</a>
+        <a href="/admin/login" class="nav-link text-muted">Admin login</a>
         <a href="/signup" class="btn btn-primary btn-sm">Get started</a>
       <% } %>
     </nav>
@@ -35,15 +55,120 @@
 </header>
 
 <style>
-  .site-navbar { border-bottom: 1px solid var(--color-border); background: var(--color-surface); position: sticky; top: 0; z-index: 20; }
-  .site-navbar-inner { display: flex; align-items: center; justify-content: space-between; padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
-  .site-navbar-logo { display: inline-flex; align-items: center; gap: var(--space-sm); font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--color-ink); }
-  .site-navbar-logo-image { width: 42px; height: 42px; object-fit: contain; flex: 0 0 auto; }
+  .site-navbar {
+    border-bottom: 1px solid var(--glass-border);
+    background: rgba(255, 250, 244, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: background var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  .site-navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+  .site-navbar-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--color-ink);
+    transition: transform var(--transition-fast);
+  }
+  .site-navbar-logo:hover {
+    transform: translateY(-1px);
+  }
+  .logo-badge {
+    background: #ffffff;
+    padding: 6px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .site-navbar-logo-image { width: 34px; height: 34px; object-fit: contain; flex: 0 0 auto; }
   .site-navbar-logo-text { display: inline-flex; align-items: baseline; gap: 0.35rem; }
-  .site-navbar-logo-text span { color: var(--color-muted); font-weight: 500; font-size: 0.85rem; }
+  .logo-subtext { color: var(--color-muted); font-weight: 500; font-size: 0.85rem; }
   .site-navbar-links { display: flex; align-items: center; gap: var(--space-md); font-size: var(--fs-body-sm); font-weight: 600; }
-  .site-navbar-links a { color: var(--color-ink); }
-  .site-navbar-links a:hover { color: var(--color-primary); }
-  .site-navbar-user { color: var(--color-muted); font-weight: 500; }
+  .nav-link {
+    color: var(--color-ink-soft);
+    padding: 0.35rem 0.6rem;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background var(--transition-fast);
+  }
+  .nav-link:hover { color: var(--color-primary); background: var(--color-primary-tint); }
+  .user-profile-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-full);
+    font-size: var(--fs-caption);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
+  .avatar-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+  }
   .inline-form { display: inline; }
+
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+  .nav-toggle span {
+    width: 22px;
+    height: 2px;
+    background: var(--color-ink);
+    border-radius: 2px;
+    transition: transform var(--transition-fast);
+  }
+
+  @media (max-width: 840px) {
+    .nav-toggle { display: flex; }
+    .site-navbar-links {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      flex-direction: column;
+      padding: var(--space-md);
+      box-shadow: var(--shadow-lg);
+    }
+    .site-navbar-links.active { display: flex; }
+  }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var toggleBtn = document.getElementById('nav-toggle-btn');
+    var navLinks = document.getElementById('site-nav-links');
+    if (toggleBtn && navLinks) {
+      toggleBtn.addEventListener('click', function () {
+        navLinks.classList.toggle('active');
+      });
+    }
+  });
+</script>
+

@@ -88,6 +88,7 @@ app.use('/api/public', require('./routes/api/publicRoutes'));
 app.use('/', require('./routes/authRoutes'));
 app.use('/', require('./routes/dashboardRoutes'));
 app.use('/donor', require('./routes/donorRoutes'));
+app.use('/elderly', require('./routes/elderlyRoutes'));
 app.use('/admin', require('./routes/ngoRoutes'));
 app.use('/volunteer', require('./routes/volunteerRoutes'));
 

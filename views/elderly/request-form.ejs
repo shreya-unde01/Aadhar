@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Request Food Delivery' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container elderly-page">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">Food support</p>
+        <h1>Tell us what you need</h1>
+        <p class="muted">A Lions Club volunteer will coordinate delivery to your home.</p>
+      </div>
+    </div>
+
+    <% if (errors && errors.length) { %>
+      <div class="alert alert-error">
+        <% errors.forEach(function(error) { %><div><%= error %></div><% }) %>
+      </div>
+    <% } %>
+
+    <form action="/elderly/requests" method="POST" class="card request-form">
+      <div class="field">
+        <label for="requirements">What food do you need?</label>
+        <textarea id="requirements" name="requirements" rows="5" required maxlength="1000" placeholder="For example: rice, dal, vegetables, milk for two people"><%= formData && formData.requirements ? formData.requirements : '' %></textarea>
+        <div class="hint">Please include quantities, dietary needs, or allergies.</div>
+      </div>
+      <div class="field">
+        <label for="deliveryAddress">Home address for delivery</label>
+        <textarea id="deliveryAddress" name="deliveryAddress" rows="4" required maxlength="500" placeholder="House number, street, area, city"><%= formData && formData.deliveryAddress ? formData.deliveryAddress : '' %></textarea>
+      </div>
+      <div class="field">
+        <label for="deliveryNote">Additional note <span class="muted">(optional)</span></label>
+        <textarea id="deliveryNote" name="deliveryNote" rows="3" maxlength="500" placeholder="Landmark, preferred delivery time, or accessibility information"><%= formData && formData.deliveryNote ? formData.deliveryNote : '' %></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit food request</button>
+      <a href="/elderly/dashboard" class="btn btn-outline">Cancel</a>
+    </form>
+  </main>
+  <%- include('../partials/footer') %>
+  <style>
+    .elderly-page { max-width: 760px; padding: var(--space-xl) 0; }
+    .page-heading { margin-bottom: var(--space-lg); }
+    .eyebrow { color: var(--color-primary); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: var(--fs-caption); margin-bottom: var(--space-xs); }
+    .request-form .btn { margin-right: var(--space-sm); }
+  </style>
+</body>
+</html>

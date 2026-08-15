@@ -5,7 +5,9 @@ const TASK_STATUSES = ['assigned', 'accepted', 'rejected', 'picked', 'delivered'
 
 const taskSchema = new mongoose.Schema(
   {
-    donationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation', required: true, index: true },
+    donationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation', default: null, index: true },
+    foodRequestId: { type: mongoose.Schema.Types.ObjectId, ref: 'FoodRequest', default: null, index: true },
+    beneficiaryId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
     volunteerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     ngoAssignedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 
@@ -38,11 +40,18 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+taskSchema.pre('validate', function (next) {
+  if (!this.donationId && !this.foodRequestId) return next(new Error('A task must reference a donation or food request.'));
+  if (this.donationId && this.foodRequestId) return next(new Error('A task cannot reference both a donation and food request.'));
+  next();
+});
+
 taskSchema.statics.STATUSES = TASK_STATUSES;
 
-taskSchema.statics.createForDonation = async function ({ donation, volunteerId, ngoId, deliveryAddress, deliveryLat, deliveryLng }) {
+taskSchema.statics.createForDonation = async function ({ donation, volunteerId, ngoId, beneficiaryId, deliveryAddress, deliveryLat, deliveryLng }) {
   return this.create({
     donationId: donation._id,
+    beneficiaryId,
     volunteerId,
     ngoAssignedBy: ngoId,
     pickupLocation: donation.pickupLocation,
@@ -50,6 +59,22 @@ taskSchema.statics.createForDonation = async function ({ donation, volunteerId, 
       address: deliveryAddress,
       lat: deliveryLat ?? null,
       lng: deliveryLng ?? null,
+    },
+    deliveryOtp: generateOtp(),
+  });
+};
+
+taskSchema.statics.createForFoodRequest = async function ({ request, volunteerId, ngoId }) {
+  return this.create({
+    foodRequestId: request._id,
+    beneficiaryId: request.householdId,
+    volunteerId,
+    ngoAssignedBy: ngoId,
+    pickupLocation: { address: 'Lions Club food collection point' },
+    deliveryLocation: {
+      address: request.deliveryAddress,
+      lat: null,
+      lng: null,
     },
     deliveryOtp: generateOtp(),
   });

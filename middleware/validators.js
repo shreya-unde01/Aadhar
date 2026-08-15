@@ -13,8 +13,20 @@ const signupValidators = [
     .matches(/\d/)
     .withMessage('Password must contain at least one number'),
   body('role')
-    .isIn(['donor', 'volunteer'])
+    .isIn(['donor', 'volunteer', 'elderly'])
     .withMessage('Invalid role selected'),
+  body('partnerName')
+    .if(body('role').equals('elderly'))
+    .trim()
+    .notEmpty()
+    .withMessage('Partner name is required')
+    .isLength({ max: 100 }),
+  body('homeAddress')
+    .if(body('role').equals('elderly'))
+    .trim()
+    .notEmpty()
+    .withMessage('Home address is required')
+    .isLength({ max: 500 }),
   body('donorType')
     .if(body('role').equals('donor'))
     .optional()

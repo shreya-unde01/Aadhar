@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('../partials/head', { title: 'Elderly Food Requests' }) %>
+<body>
+  <%- include('../partials/navbar') %>
+  <main class="container list-page">
+    <div class="form-page-head">
+      <h1>Elderly food requests</h1>
+      <p class="muted">Review household needs and arrange delivery through an approved volunteer.</p>
+    </div>
+    <% if (requests.length === 0) { %>
+      <div class="card text-center"><p class="mb-0 muted">No household food requests have been submitted.</p></div>
+    <% } else { %>
+      <div class="request-grid">
+        <% requests.forEach(request => { %>
+          <article class="card request-card">
+            <div class="section-heading">
+              <strong><%= request.householdId ? request.householdId.name : 'Household' %></strong>
+              <span class="pill pill-<%= request.status === 'out_for_delivery' ? 'assigned' : request.status %>"><%= request.status.replace('_', ' ') %></span>
+            </div>
+            <p><strong>Needs:</strong> <%= request.requirements %></p>
+            <dl class="detail-list">
+              <dt>Delivery</dt><dd><%= request.deliveryAddress %></dd>
+              <dt>Phone</dt><dd><%= request.householdId ? request.householdId.phone : request.phone %></dd>
+              <% if (request.deliveryNote) { %><dt>Note</dt><dd><%= request.deliveryNote %></dd><% } %>
+            </dl>
+            <div class="request-actions">
+              <% if (request.status === 'pending') { %>
+                <a href="/admin/food-requests/<%= request._id %>/assign" class="btn btn-primary btn-sm">Arrange delivery</a>
+              <% } else { %>
+                <span class="muted">Delivery arranged</span>
+              <% } %>
+              <small class="muted"><%= request.createdAt.toLocaleDateString() %></small>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </main>
+  <%- include('../partials/footer') %>
+  <style>
+    .list-page { padding: var(--space-xl) 0; }
+    .request-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-md); }
+    .request-card { display: flex; flex-direction: column; }
+    .request-card p { line-height: 1.55; }
+    .detail-list { display: grid; grid-template-columns: auto 1fr; gap: var(--space-xs) var(--space-sm); font-size: var(--fs-body-sm); }
+    .detail-list dt { color: var(--color-muted); }
+    .detail-list dd { margin: 0; }
+    .request-actions { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); margin-top: auto; padding-top: var(--space-md); }
+  </style>
+</body>
+</html>

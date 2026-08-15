@@ -108,4 +108,15 @@ const NGOAdmin = User.discriminator(
   })
 );
 
-module.exports = { User, Donor, Volunteer, NGOAdmin };
+// ---------------------------------------------------------------------------
+// Elderly couple / household discriminator
+// ---------------------------------------------------------------------------
+const Elderly = User.discriminator(
+  'elderly',
+  new mongoose.Schema({
+    partnerName: { type: String, required: true, trim: true, maxlength: 100 },
+    homeAddress: { type: String, required: true, trim: true, maxlength: 500 },
+  })
+);
+
+module.exports = { User, Donor, Volunteer, NGOAdmin, Elderly };

@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 const feedbackSchema = new mongoose.Schema(
   {
-    donationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation', required: true, index: true },
+    donationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation', default: null, index: true },
+    foodRequestId: { type: mongoose.Schema.Types.ObjectId, ref: 'FoodRequest', default: null, index: true },
     taskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task', default: null },
 
     rating: { type: Number, min: 1, max: 5, required: true },

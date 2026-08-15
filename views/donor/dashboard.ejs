@@ -5,34 +5,38 @@
   <%- include('../partials/navbar') %>
   <main class="container donor-dash">
 
-    <div class="donor-dash-header">
-      <div>
+    <div class="dash-welcome-banner">
+      <div class="dash-welcome-copy">
         <h1>Welcome back, <%= donor.name %> 👋</h1>
-        <p class="muted mb-0">
+        <div class="dash-meta-row">
           <span class="pill pill-delivered" style="text-transform:capitalize;"><%= donor.donorType %> donor</span>
-          &nbsp;· Rank <strong>#<%= rank %></strong> on the leaderboard
-        </p>
+          <span class="rank-pill">🏆 Leaderboard Rank <strong>#<%= rank %></strong></span>
+        </div>
       </div>
       <div class="donor-dash-actions">
-        <a href="/donor/donations/new" class="btn btn-primary">+ Add Donation</a>
+        <a href="/donor/donations/new" class="btn btn-primary btn-lg">+ Add Donation</a>
         <a href="/donor/donations/bulk-new" class="btn btn-outline">Bulk Donation</a>
       </div>
     </div>
 
     <div class="stat-grid mt-lg">
       <div class="stat-card">
+        <div class="stat-icon">📦</div>
         <span class="stat-value"><%= totalDonations %></span>
         <span class="stat-label">Total Donations</span>
       </div>
       <div class="stat-card">
+        <div class="stat-icon">⏳</div>
         <span class="stat-value"><%= counts.pending %></span>
         <span class="stat-label">Pending</span>
       </div>
       <div class="stat-card">
+        <div class="stat-icon">🚚</div>
         <span class="stat-value"><%= counts.assigned + counts.picked %></span>
         <span class="stat-label">In Progress</span>
       </div>
       <div class="stat-card">
+        <div class="stat-icon">✅</div>
         <span class="stat-value"><%= counts.delivered %></span>
         <span class="stat-label">Delivered</span>
       </div>
@@ -46,16 +50,24 @@
         </div>
 
         <% if (recentDonations.length === 0) { %>
-          <p class="muted">You haven't made a donation yet. <a href="/donor/donations/new">Start with your first one</a> — it only takes a minute.</p>
+          <div class="empty-state">
+            <p class="muted">You haven't created a donation yet. <a href="/donor/donations/new">Start with your first one</a> — it takes less than a minute.</p>
+          </div>
         <% } else { %>
           <ul class="donation-rows">
             <% recentDonations.forEach(d => { %>
               <li>
                 <a href="/donor/donations/<%= d._id %>" class="donation-row">
-                  <div>
-                    <strong style="text-transform:capitalize;"><%= d.type %></strong>
-                    <span class="muted"> · <%= d.quantity %> <%= d.unit || '' %></span>
-                    <div class="muted" style="font-size: var(--fs-caption);"><%= d.donationCode %></div>
+                  <div class="donation-info">
+                    <div class="donation-title-line">
+                      <strong style="text-transform:capitalize; font-size:1.05rem;"><%= d.type %></strong>
+                      <span class="muted"> · <%= d.quantity %> <%= d.unit || '' %></span>
+                    </div>
+                    <div class="donation-meta-line muted">
+                      <span class="code-tag"><%= d.donationCode %></span>
+                      <% if (d.timeSlot && d.timeSlot.date) { %> · Pickup: <%= new Date(d.timeSlot.date).toLocaleDateString() %><% } %>
+                      <% if (d.urgent) { %> · <span class="urgent-tag">🚨 URGENT</span><% } %>
+                    </div>
                   </div>
                   <span class="pill pill-<%= d.status %>"><%= d.status %></span>
                 </a>
@@ -85,12 +97,12 @@
           </div>
         <% } %>
 
-        <div class="mt-lg">
+        <div class="mt-xl feedback-preview-box">
           <div class="section-heading">
-            <h2 style="font-size: var(--fs-body-lg);">Feedback</h2>
+            <h2 style="font-size: 1.1rem; margin-bottom: 0;">Recipient Feedback</h2>
             <a href="/donor/feedback" class="link-more">View →</a>
           </div>
-          <p class="muted mb-0">See what recipients said about your donations once delivered.</p>
+          <p class="muted mb-0 mt-sm" style="font-size: var(--fs-body-sm);">See notes and thank-you messages from recipients after handoffs.</p>
         </div>
       </section>
     </div>
@@ -100,21 +112,92 @@
 
   <style>
     .donor-dash { padding: var(--space-xl) 0; }
-    .donor-dash-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
+    .dash-welcome-banner {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+    .dash-welcome-copy h1 { margin-bottom: var(--space-xs); font-size: 1.8rem; }
+    .dash-meta-row { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; }
+    .rank-pill {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      padding: 0.3em 0.8em;
+      border-radius: var(--radius-full);
+      font-size: var(--fs-caption);
+      color: var(--color-ink-soft);
+    }
     .donor-dash-actions { display: flex; gap: var(--space-sm); flex-shrink: 0; }
     .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
-    .stat-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-md); text-align: center; }
+    .stat-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-lg) var(--space-md);
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .stat-icon { font-size: 1.6rem; margin-bottom: var(--space-xs); }
     .stat-value { display: block; font-family: var(--font-display); font-size: var(--fs-display-md); font-weight: 700; color: var(--color-primary); }
-    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); }
-    .donor-dash-cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-md); align-items: start; }
-    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-sm); }
-    .link-more { font-size: var(--fs-body-sm); font-weight: 600; }
-    .donation-rows li { border-top: 1px solid var(--color-border); }
-    .donation-rows li:first-child { border-top: none; }
-    .donation-row { display: flex; align-items: center; justify-content: space-between; padding: var(--space-sm) 0; color: var(--color-ink); }
+    .stat-label { font-size: var(--fs-body-sm); color: var(--color-muted); font-weight: 600; }
+    .donor-dash-cols { display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-lg); align-items: start; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md); }
+    .link-more { font-size: var(--fs-body-sm); font-weight: 700; }
+    .donation-rows { display: flex; flex-direction: column; gap: var(--space-xs); }
+    .donation-rows li { list-style: none; }
+    .donation-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border-subtle);
+      border-radius: var(--radius-md);
+      color: var(--color-ink);
+      transition: border-color var(--transition-fast), transform var(--transition-fast);
+    }
+    .donation-row:hover {
+      border-color: var(--color-primary-light);
+      transform: translateX(4px);
+    }
+    .code-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #ffffff;
+      padding: 0.15em 0.5em;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+    }
+    .urgent-tag { color: var(--color-danger); font-weight: 700; }
     .badge-grid { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
-    .badge-chip { display: flex; align-items: center; gap: var(--space-xs); background: var(--color-primary-tint); color: var(--color-primary-dark); padding: 0.4em 0.8em; border-radius: var(--radius-full); font-size: var(--fs-body-sm); font-weight: 600; }
-    .badge-icon { font-size: 1.1em; }
+    .badge-chip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: var(--color-primary-tint);
+      color: var(--color-primary-dark);
+      padding: 0.45em 0.9em;
+      border-radius: var(--radius-full);
+      font-size: var(--fs-body-sm);
+      font-weight: 600;
+      border: 1px solid rgba(227, 93, 37, 0.2);
+    }
+    .badge-icon { font-size: 1.2em; }
+    .feedback-preview-box {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+    }
     @media (max-width: 860px) {
       .stat-grid { grid-template-columns: repeat(2, 1fr); }
       .donor-dash-cols { grid-template-columns: 1fr; }
@@ -122,3 +205,4 @@
   </style>
 </body>
 </html>
+

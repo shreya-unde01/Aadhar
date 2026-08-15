@@ -20,14 +20,15 @@
         <% tasks.forEach(t => { %>
           <div class="card" data-task-id="<%= t._id %>">
             <div class="section-heading" style="margin-bottom: var(--space-xs);">
-              <strong><%= t.donationId.donationCode %></strong>
+              <strong><%= t.donationId ? t.donationId.donationCode : 'Elderly food request' %></strong>
               <span class="pill pill-<%= t.status === 'picked' ? 'picked' : 'assigned' %>"><%= t.status %></span>
             </div>
-            <p class="mb-0" style="text-transform:capitalize;"><%= t.donationId.type %> · <%= t.donationId.quantity %></p>
+            <p class="mb-0" style="text-transform:capitalize;"><%= t.donationId ? `${t.donationId.type} · ${t.donationId.quantity}` : t.foodRequestId.requirements %></p>
             <p class="muted mb-0" style="font-size: var(--fs-body-sm);">Volunteer: <%= t.volunteerId.name %> · <%= t.volunteerId.phone %></p>
+            <% if (t.beneficiaryId) { %><p class="muted mb-0" style="font-size: var(--fs-body-sm);">Recipient: <%= t.beneficiaryId.name %> &amp; <%= t.beneficiaryId.partnerName %></p><% } %>
             <p class="muted mb-0" style="font-size: var(--fs-caption);">
-              Pickup: <%= new Date(t.donationId.timeSlot.date).toLocaleDateString() %>, <%= t.donationId.timeSlot.startTime %>–<%= t.donationId.timeSlot.endTime %>
-              <% if (t.donationId.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
+              <% if (t.donationId) { %>Pickup: <%= new Date(t.donationId.timeSlot.date).toLocaleDateString() %>, <%= t.donationId.timeSlot.startTime %>–<%= t.donationId.timeSlot.endTime %><% } else { %>Deliver to elderly household<% } %>
+              <% if (t.donationId && t.donationId.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
             </p>
 
             <div class="otp-box mt-sm">
