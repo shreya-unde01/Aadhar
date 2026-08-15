@@ -12,6 +12,9 @@
         <p class="muted mb-0"><%= currentUser.organizationName %></p>
       </div>
       <div class="donor-dash-actions" id="dash-actions">
+        <% if (stats.pendingFoodRequests > 0) { %>
+          <a href="/admin/food-requests" class="btn btn-primary" style="background: var(--color-success); box-shadow: 0 4px 12px rgba(76,175,80,0.3);">🍛 <%= stats.pendingFoodRequests %> pending food request<%= stats.pendingFoodRequests > 1 ? 's' : '' %></a>
+        <% } %>
         <% if (stats.pendingApprovals > 0) { %>
           <a href="/admin/volunteers?tab=pending" class="btn btn-outline" id="pending-approvals-btn">👥 <%= stats.pendingApprovals %> pending approval<%= stats.pendingApprovals > 1 ? 's' : '' %></a>
         <% } %>
@@ -42,6 +45,11 @@
         <span class="stat-value"><%= stats.completedDeliveries %></span>
         <span class="stat-label">Delivered</span>
       </a>
+      <a href="/admin/food-requests" class="stat-card">
+        <div class="stat-icon">🍛</div>
+        <span class="stat-value"><%= stats.pendingFoodRequests %></span>
+        <span class="stat-label">Pending Food Requests</span>
+      </a>
     </div>
 
     <div class="quick-links mt-lg">
@@ -64,6 +72,10 @@
       <a href="/admin/reports" class="quick-link-card">
         <span class="quick-link-icon">📊</span>
         <span>Reports & Insights</span>
+      </a>
+      <a href="/admin/food-requests" class="quick-link-card">
+        <span class="quick-link-icon">🍛</span>
+        <span>Elderly Food Requests</span>
       </a>
       <a href="/admin/emergency" class="quick-link-card emergency-link">
         <span class="quick-link-icon">🚨</span>

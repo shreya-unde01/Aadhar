@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { generateOtp } = require('../utils/otp');
 
-const TASK_STATUSES = ['assigned', 'accepted', 'rejected', 'picked', 'delivered'];
+const TASK_STATUSES = ['assigned', 'accepted', 'rejected', 'pickup_reached', 'picked', 'in_transit', 'delivered'];
 
 const taskSchema = new mongoose.Schema(
   {
@@ -28,7 +28,9 @@ const taskSchema = new mongoose.Schema(
     status: { type: String, enum: TASK_STATUSES, default: 'assigned', index: true },
 
     acceptedAt: { type: Date, default: null },
+    pickupReachedAt: { type: Date, default: null },
     pickedAt: { type: Date, default: null },
+    inTransitAt: { type: Date, default: null },
     deliveredAt: { type: Date, default: null },
 
     // Generated at assignment time, entered by the volunteer at drop-off to

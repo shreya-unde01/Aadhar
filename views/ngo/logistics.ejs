@@ -21,7 +21,7 @@
           <div class="card" data-task-id="<%= t._id %>">
             <div class="section-heading" style="margin-bottom: var(--space-xs);">
               <strong><%= t.donationId ? t.donationId.donationCode : 'Elderly food request' %></strong>
-              <span class="pill pill-<%= t.status === 'picked' ? 'picked' : 'assigned' %>"><%= t.status %></span>
+              <span class="pill pill-<%= t.status %>"><%= t.status.replace(/_/g, ' ') %></span>
             </div>
             <p class="mb-0" style="text-transform:capitalize;"><%= t.donationId ? `${t.donationId.type} · ${t.donationId.quantity}` : t.foodRequestId.requirements %></p>
             <p class="muted mb-0" style="font-size: var(--fs-body-sm);">Volunteer: <%= t.volunteerId.name %> · <%= t.volunteerId.phone %></p>

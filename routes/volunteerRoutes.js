@@ -19,7 +19,9 @@ router.get('/dashboard', asyncHandler(volunteerController.getDashboard));
 
 router.post('/tasks/:id/accept', asyncHandler(volunteerController.postAcceptTask));
 router.post('/tasks/:id/reject', asyncHandler(volunteerController.postRejectTask));
+router.post('/tasks/:id/pickup-reached', asyncHandler(volunteerController.postMarkPickupReached));
 router.post('/tasks/:id/picked', asyncHandler(volunteerController.postMarkPicked));
+router.post('/tasks/:id/in-transit', asyncHandler(volunteerController.postStartDelivery));
 
 router.get('/tasks/:id/deliver', asyncHandler(volunteerController.getDeliverForm));
 router.post('/tasks/:id/deliver', uploadDelivery, asyncHandler(volunteerController.postDeliver));

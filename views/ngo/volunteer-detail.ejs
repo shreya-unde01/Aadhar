@@ -42,7 +42,7 @@
                   <strong><%= t.donationId ? t.donationId.donationCode : 'Elderly food request' %></strong>
                   <span class="muted"> · <%= t.donationId ? t.donationId.type : (t.foodRequestId ? t.foodRequestId.requirements : 'Food delivery') %></span>
                 </div>
-                <span class="pill pill-<%= t.status === 'delivered' ? 'delivered' : (t.status === 'picked' ? 'picked' : 'assigned') %>"><%= t.status %></span>
+                <span class="pill pill-<%= t.status %>"><%= t.status.replace(/_/g, ' ') %></span>
               </li>
             <% }) %>
           </ul>

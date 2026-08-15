@@ -42,7 +42,7 @@ exports.getDashboard = async (req, res) => {
     ]),
   ]);
 
-  const counts = { pending: 0, assigned: 0, picked: 0, delivered: 0, cancelled: 0 };
+  const counts = { pending: 0, assigned: 0, accepted: 0, pickup_reached: 0, picked: 0, in_transit: 0, delivered: 0, cancelled: 0 };
   statusCounts.forEach((row) => { counts[row._id] = row.count; });
 
   // Leaderboard rank — how many donors currently outscore this one.

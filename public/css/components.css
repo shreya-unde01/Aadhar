@@ -248,10 +248,25 @@
   border-color: #bfdbfe;
   color: var(--status-assigned);
 }
+.pill-accepted {
+  background: #ecfeff;
+  border-color: #a5f3fc;
+  color: #0f766e;
+}
+.pill-pickup_reached {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
 .pill-picked {
   background: #f5f3ff;
   border-color: #ddd6fe;
   color: var(--status-picked);
+}
+.pill-in_transit {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  color: #4338ca;
 }
 .pill-delivered {
   background: var(--color-secondary-tint);

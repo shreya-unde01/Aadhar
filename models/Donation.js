@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { generateDonationCode } = require('../utils/donationCode');
 
 const DONATION_TYPES = ['food'];
-const DONATION_STATUSES = ['pending', 'assigned', 'picked', 'delivered', 'cancelled'];
+const DONATION_STATUSES = ['pending', 'assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit', 'delivered', 'cancelled'];
 
 const donationSchema = new mongoose.Schema(
   {

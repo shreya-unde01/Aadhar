@@ -82,12 +82,40 @@
               </label>
             <% }) %>
           </div>
-          <button type="submit" class="btn btn-primary btn-block mt-lg" <%= elderlyCouples.length === 0 ? 'disabled' : '' %>>Assign Volunteer</button>
+          <% if (elderlyCouples.length === 0) { %>
+            <div class="alert alert-error mt-md">
+              No active elderly household accounts are available yet. Create or reactivate an elderly account before assigning this donation.
+            </div>
+          <% } %>
+          <button type="submit" class="btn btn-primary btn-block mt-lg" <%= elderlyCouples.length === 0 ? 'disabled' : '' %> data-assign-button>Assign Volunteer</button>
         <% } %>
       </form>
     <% } %>
   </main>
   <%- include('../partials/footer') %>
+
+  <script>
+    (() => {
+      const form = document.querySelector('form[action*="/admin/donations/"]');
+      if (!form) return;
+
+      const elderlySelect = form.querySelector('#elderlyId');
+      const volunteerInputs = Array.from(form.querySelectorAll('input[name="volunteerId"]'));
+      const assignButton = form.querySelector('[data-assign-button]');
+
+      if (!elderlySelect || !assignButton) return;
+
+      const updateButtonState = () => {
+        const hasElderly = !!elderlySelect.value;
+        const hasVolunteer = volunteerInputs.some((input) => input.checked);
+        assignButton.disabled = !hasElderly || !hasVolunteer || elderlySelect.value === '';
+      };
+
+      elderlySelect.addEventListener('change', updateButtonState);
+      volunteerInputs.forEach((input) => input.addEventListener('change', updateButtonState));
+      updateButtonState();
+    })();
+  </script>
 
   <style>
     .form-page { padding: var(--space-xl) 0; max-width: 720px; margin: 0 auto; }

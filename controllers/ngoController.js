@@ -17,21 +17,22 @@ const pickupDateSort = { 'timeSlot.date': 1, createdAt: 1 };
 // ---------------------------------------------------------------------------
 exports.getOverview = async (req, res) => {
   const ngoId = req.user._id;
-  const [totalDonations, activeVolunteers, pendingPickups, completedDeliveries, pendingApprovals, activeAlerts] =
+  const [totalDonations, activeVolunteers, pendingPickups, completedDeliveries, pendingApprovals, activeAlerts, pendingFoodRequests] =
     await Promise.all([
       Donation.countDocuments({ ngoId }),
       Volunteer.countDocuments({ ngoId, isApproved: true, isActive: true }),
-      Donation.countDocuments({ ngoId, status: { $in: ['pending', 'assigned'] } }),
+      Donation.countDocuments({ ngoId, status: { $in: ['pending', 'assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit'] } }),
       Donation.countDocuments({ ngoId, status: 'delivered' }),
       Volunteer.countDocuments({ ngoId, isApproved: false, isActive: true }),
       EmergencyAlert.countDocuments({ isActive: true }),
+      FoodRequest.countDocuments({ status: 'pending' }),
     ]);
 
   const recentDonations = await Donation.find({ ngoId }).sort(pickupDateSort).limit(6).populate('donorId', 'name');
 
   res.render('ngo/dashboard', {
     title: 'Lions Club Admin Dashboard',
-    stats: { totalDonations, activeVolunteers, pendingPickups, completedDeliveries, pendingApprovals, activeAlerts },
+    stats: { totalDonations, activeVolunteers, pendingPickups, completedDeliveries, pendingApprovals, activeAlerts, pendingFoodRequests },
     recentDonations,
   });
 };
@@ -60,7 +61,12 @@ exports.getAssignDonation = async (req, res) => {
   const donation = await Donation.findById(req.params.id).populate('donorId', 'name phone');
   if (!donation) return res.status(404).render('error', { title: 'Not found', message: 'Donation not found.' });
 
-  const volunteers = await Volunteer.find({ ngoId: req.user._id, isApproved: true, isActive: true, isAvailable: true });
+  const volunteers = await Volunteer.find({
+    ngoId: req.user._id,
+    isApproved: true,
+    isActive: true,
+    $or: [{ isAvailable: true }, { isAvailable: { $exists: false } }, { isAvailable: null }],
+  });
 
   const hasCoords = donation.pickupLocation.lat != null && donation.pickupLocation.lng != null;
   const volunteersWithCoords = volunteers.filter((v) => v.location.lat != null && v.location.lng != null);
@@ -129,13 +135,33 @@ exports.getAssignDonation = async (req, res) => {
 exports.postAssignVolunteer = async (req, res) => {
   const donation = await Donation.findById(req.params.id);
   if (!donation) return res.status(404).render('error', { title: 'Not found', message: 'Donation not found.' });
+  if (donation.status !== 'pending') {
+    return res.redirect(`/admin/donations/${donation._id}/assign`);
+  }
 
   const { volunteerId, elderlyId } = req.body;
-  const volunteer = await Volunteer.findOne({ _id: volunteerId, ngoId: req.user._id, isApproved: true, isActive: true });
+
+  if (!volunteerId || !elderlyId) {
+    return res.status(400).render('error', {
+      title: 'Assignment incomplete',
+      message: 'Please select an available volunteer and a valid elderly household before assigning this donation.',
+    });
+  }
+
+  const volunteer = await Volunteer.findOne({
+    _id: volunteerId,
+    ngoId: req.user._id,
+    isApproved: true,
+    isActive: true,
+    $or: [{ isAvailable: true }, { isAvailable: { $exists: false } }, { isAvailable: null }],
+  });
   const elderlyCouple = await Elderly.findOne({ _id: elderlyId, isActive: true });
 
   if (!volunteer || !elderlyCouple) {
-    return res.redirect(`/admin/donations/${donation._id}/assign`);
+    return res.status(400).render('error', {
+      title: 'Assignment invalid',
+      message: 'The selected volunteer or elderly household could not be validated. Please choose an active volunteer and recipient and try again.',
+    });
   }
 
   const task = await Task.createForDonation({
@@ -247,7 +273,7 @@ exports.getVolunteerDetail = async (req, res) => {
 // (no API key needed for this URL scheme; the embedded map view arrives in Phase 5)
 // ---------------------------------------------------------------------------
 exports.getLogistics = async (req, res) => {
-  const tasks = await Task.find({ ngoId: req.user._id, status: { $in: ['assigned', 'accepted', 'picked'] } })
+  const tasks = await Task.find({ ngoId: req.user._id, status: { $in: ['assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit'] } })
     .sort({ createdAt: -1 })
     .populate('donationId', 'donationCode type quantity timeSlot')
     .populate('foodRequestId', 'requirements deliveryAddress')

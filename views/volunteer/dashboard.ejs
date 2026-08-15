@@ -63,10 +63,10 @@
                               <div class="card task-card">
                                 <div class="section-heading" style="margin-bottom: var(--space-xs);">
                                   <strong style="text-transform:capitalize; font-size:1.15rem;">
-                                    <%= d.type %>
+                                    <%= d && d.type ? d.type : 'Food Donation' %>
                                   </strong>
-                                  <span class="pill pill-<%= t.status === 'picked' ? 'picked' : 'assigned' %>">
-                                    <%= t.status %>
+                                  <span class="pill pill-<%= t.status %>">
+                                    <%= t.status.replace(/_/g, ' ') %>
                                   </span>
                                 </div>
                                 <p class="muted mb-0">
@@ -103,24 +103,19 @@
                                       Open in Google Maps</a>
 
                                     <div class="row-actions mt-md">
-                                      <% if (t.status==='assigned' ) { %>
-                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/accept"
-                                          class="inline-form"><button class="btn btn-primary btn-sm">Accept
-                                            Task</button></form>
-                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/reject"
-                                          class="inline-form"><button class="btn btn-outline btn-sm">Decline</button>
-                                        </form>
-                                        <% } else if (t.status==='accepted' ) { %>
-                                          <form method="POST" action="/volunteer/tasks/<%= t._id %>/picked"
-                                            class="inline-form"><button class="btn btn-primary btn-sm">Mark Picked
-                                              Up</button></form>
-                                          <form method="POST" action="/volunteer/tasks/<%= t._id %>/reject"
-                                            class="inline-form"><button class="btn btn-outline btn-sm">Decline</button>
-                                          </form>
-                                          <% } else if (t.status==='picked' ) { %>
-                                            <a href="/volunteer/tasks/<%= t._id %>/deliver"
-                                              class="btn btn-primary btn-sm">Confirm Delivery</a>
-                                            <% } %>
+                                      <% if (t.status === 'assigned') { %>
+                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/accept" class="inline-form"><button class="btn btn-primary btn-sm">Accept Task</button></form>
+                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/reject" class="inline-form"><button class="btn btn-outline btn-sm">Decline</button></form>
+                                      <% } else if (t.status === 'accepted') { %>
+                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/pickup-reached" class="inline-form"><button class="btn btn-primary btn-sm">Reached Pickup</button></form>
+                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/reject" class="inline-form"><button class="btn btn-outline btn-sm">Decline</button></form>
+                                      <% } else if (t.status === 'pickup_reached') { %>
+                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/picked" class="inline-form"><button class="btn btn-primary btn-sm">Mark Picked Up</button></form>
+                                      <% } else if (t.status === 'picked') { %>
+                                        <form method="POST" action="/volunteer/tasks/<%= t._id %>/in-transit" class="inline-form"><button class="btn btn-primary btn-sm">Start Delivery</button></form>
+                                      <% } else if (t.status === 'in_transit') { %>
+                                        <a href="/volunteer/tasks/<%= t._id %>/deliver" class="btn btn-primary btn-sm">Confirm Delivery</a>
+                                      <% } %>
                                     </div>
                               </div>
                               <% }) %>

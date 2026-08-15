@@ -14,7 +14,7 @@ const { emitVolunteerTaskUpdate } = require('../sockets');
 exports.getDashboard = async (req, res) => {
   const tasks = await Task.find({
     volunteerId: req.user._id,
-    status: { $in: ['assigned', 'accepted', 'picked'] },
+    status: { $in: ['assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit'] },
   })
     .sort({ createdAt: -1 })
     .populate('donationId')
@@ -48,6 +48,11 @@ exports.postAcceptTask = async (req, res) => {
     task.acceptedAt = new Date();
     await task.save();
     emitVolunteerTaskUpdate(task);
+
+    const donation = task.donationId ? await Donation.findById(task.donationId) : null;
+    if (donation) {
+      await updateDonationStatus(donation, 'accepted', 'Volunteer accepted the assignment');
+    }
   }
   res.redirect('/volunteer/dashboard');
 };
@@ -78,8 +83,24 @@ exports.postRejectTask = async (req, res) => {
 // ---------------------------------------------------------------------------
 // Mark picked
 // ---------------------------------------------------------------------------
-exports.postMarkPicked = async (req, res) => {
+exports.postMarkPickupReached = async (req, res) => {
   const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'accepted' });
+  if (task) {
+    task.status = 'pickup_reached';
+    task.pickupReachedAt = new Date();
+    await task.save();
+    emitVolunteerTaskUpdate(task);
+
+    const donation = task.donationId ? await Donation.findById(task.donationId) : null;
+    if (donation) {
+      await updateDonationStatus(donation, 'pickup_reached', 'Volunteer reached pickup location');
+    }
+  }
+  res.redirect('/volunteer/dashboard');
+};
+
+exports.postMarkPicked = async (req, res) => {
+  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'pickup_reached' });
   if (task) {
     task.status = 'picked';
     task.pickedAt = new Date();
@@ -87,8 +108,27 @@ exports.postMarkPicked = async (req, res) => {
     emitVolunteerTaskUpdate(task);
 
     const donation = task.donationId ? await Donation.findById(task.donationId) : null;
-    if (donation) await updateDonationStatus(donation, 'picked', 'Picked up by volunteer');
-    else if (task.foodRequestId) await FoodRequest.findByIdAndUpdate(task.foodRequestId, { status: 'out_for_delivery' });
+    if (donation) {
+      await updateDonationStatus(donation, 'picked', 'Picked up by volunteer');
+    } else if (task.foodRequestId) {
+      await FoodRequest.findByIdAndUpdate(task.foodRequestId, { status: 'out_for_delivery' });
+    }
+  }
+  res.redirect('/volunteer/dashboard');
+};
+
+exports.postStartDelivery = async (req, res) => {
+  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' });
+  if (task) {
+    task.status = 'in_transit';
+    task.inTransitAt = new Date();
+    await task.save();
+    emitVolunteerTaskUpdate(task);
+
+    const donation = task.donationId ? await Donation.findById(task.donationId) : null;
+    if (donation) {
+      await updateDonationStatus(donation, 'in_transit', 'Volunteer started the delivery route');
+    }
   }
   res.redirect('/volunteer/dashboard');
 };
@@ -97,7 +137,7 @@ exports.postMarkPicked = async (req, res) => {
 // Delivery confirmation — OTP + feedback collection
 // ---------------------------------------------------------------------------
 exports.getDeliverForm = async (req, res) => {
-  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' })
+  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'in_transit' })
     .populate('donationId')
     .populate('foodRequestId');
   if (!task) {
@@ -107,7 +147,7 @@ exports.getDeliverForm = async (req, res) => {
 };
 
 exports.postDeliver = async (req, res) => {
-  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'picked' })
+  const task = await Task.findOne({ _id: req.params.id, volunteerId: req.user._id, status: 'in_transit' })
     .populate('donationId')
     .populate('foodRequestId');
   if (!task) {

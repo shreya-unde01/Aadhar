@@ -23,7 +23,7 @@
     </div>
     <p id="live-indicator" class="muted" style="font-size: var(--fs-caption); display:none;">🟢 Live — this page updates automatically as your donation moves.</p>
 
-    <% const steps = ['pending', 'assigned', 'picked', 'delivered'];
+    <% const steps = ['pending', 'assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit', 'delivered'];
        const currentIndex = steps.indexOf(donation.status); %>
 
     <% if (donation.status === 'cancelled') { %>
@@ -135,7 +135,7 @@
       if (!pipeline || !window.aadharSocket) return;
 
       var donationId = pipeline.dataset.donationId;
-      var steps = ['pending', 'assigned', 'picked', 'delivered'];
+      var steps = ['pending', 'assigned', 'accepted', 'pickup_reached', 'picked', 'in_transit', 'delivered'];
 
       // No need to join a per-donation room — the server already pushes
       // every status change for this donor's donations to their user room
