@@ -43,7 +43,7 @@ exports.getDonationsList = async (req, res) => {
   if (urgent === '1') filter.urgent = true;
   if (type && Donation.TYPES.includes(type)) filter.type = type;
 
-  const donations = await Donation.find(filter).sort({ urgent: -1, createdAt: -1 }).populate('donorId', 'name');
+  const donations = await Donation.find(filter).sort({ createdAt: 1 }).populate('donorId', 'name');
 
   res.render('ngo/donations-list', {
     title: 'Manage Donations',
