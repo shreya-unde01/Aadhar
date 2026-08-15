@@ -83,7 +83,6 @@ function emitNewDonation(donation) {
     donationId: donation._id.toString(),
     donationCode: donation.donationCode,
     type: donation.type,
-    urgent: donation.urgent,
   });
 }
 

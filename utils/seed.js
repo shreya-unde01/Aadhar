@@ -150,7 +150,6 @@ async function seedDonations({ ngo, volunteers, donors }) {
         pickupLocation: { address: `Pickup Point ${i + 1}, Nashik`, lat: jitter(BASE_LAT), lng: jitter(BASE_LNG) },
         timeSlot: randomTimeSlot(0),
         expiryDate: type === 'food' ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) : null,
-        urgent: i === 0, // one urgent pending donation for demo
       })
     );
   }
@@ -219,7 +218,6 @@ async function seedDonations({ ngo, volunteers, donors }) {
       unit: UNITS[type],
       pickupLocation: { address: `Pickup Point ${i + 14}, Nashik`, lat: jitter(BASE_LAT), lng: jitter(BASE_LNG) },
       timeSlot: randomTimeSlot(3 + i),
-      urgent: i === 6,
     });
     const volunteer = approvedVolunteers[i % approvedVolunteers.length];
     const task = await Task.createForDonation({

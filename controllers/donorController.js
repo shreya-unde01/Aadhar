@@ -8,6 +8,7 @@ const QRCode = require('qrcode');
 const crypto = require('crypto');
 
 const DONATION_TYPES = Donation.TYPES;
+const pickupDateSort = { 'timeSlot.date': 1, createdAt: 1 };
 
 async function buildLionsClubPaymentData() {
   const lionsClub = await getLionsClubAdmin('_id organizationName upiId');
@@ -34,7 +35,7 @@ exports.getDashboard = async (req, res) => {
 
   const [donor, recentDonations, statusCounts] = await Promise.all([
     Donor.findById(donorId).populate('badges.badgeId'),
-    Donation.find({ donorId }).sort({ urgent: -1, createdAt: -1 }).limit(5),
+    Donation.find({ donorId }).sort(pickupDateSort).limit(5),
     Donation.aggregate([
       { $match: { donorId } },
       { $group: { _id: '$status', count: { $sum: 1 } } },
@@ -99,7 +100,6 @@ exports.postDonation = async (req, res) => {
       pickupLocation: { address: b.address, lat: b.lat ? Number(b.lat) : null, lng: b.lng ? Number(b.lng) : null },
       timeSlot: { date: b.date, startTime: b.startTime, endTime: b.endTime },
       expiryDate: b.expiryDate || null,
-      urgent: b.urgent === 'on' || b.urgent === 'true',
     });
 
     emitNewDonation(donation);
@@ -170,7 +170,6 @@ exports.postBulkDonation = async (req, res) => {
         unit: item.unit || null,
         description: item.description || '',
         expiryDate: item.expiryDate || null,
-        urgent: !!item.urgent,
       });
     }
 
@@ -203,7 +202,7 @@ exports.getDonationsList = async (req, res) => {
   if (status && Donation.STATUSES.includes(status)) filter.status = status;
   if (bulkGroupId) filter.bulkGroupId = bulkGroupId;
 
-  const donations = await Donation.find(filter).sort({ urgent: -1, createdAt: -1 });
+  const donations = await Donation.find(filter).sort(pickupDateSort);
 
   res.render('donor/donations-list', {
     title: 'My Donations',

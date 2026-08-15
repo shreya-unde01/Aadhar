@@ -66,7 +66,6 @@
                     <div class="donation-meta-line muted">
                       <span class="code-tag"><%= d.donationCode %></span>
                       <% if (d.timeSlot && d.timeSlot.date) { %> · Pickup: <%= new Date(d.timeSlot.date).toLocaleDateString() %><% } %>
-                      <% if (d.urgent) { %> · <span class="urgent-tag">🚨 URGENT</span><% } %>
                     </div>
                   </div>
                   <span class="pill pill-<%= d.status %>"><%= d.status %></span>
@@ -177,7 +176,6 @@
       border-radius: var(--radius-sm);
       border: 1px solid var(--color-border);
     }
-    .urgent-tag { color: var(--color-danger); font-weight: 700; }
     .badge-grid { display: flex; flex-wrap: wrap; gap: var(--space-sm); }
     .badge-chip {
       display: flex;

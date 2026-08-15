@@ -10,6 +10,8 @@ const { getDistanceMatrix } = require('../utils/distanceMatrix');
 const { updateDonationStatus } = require('../utils/donationStatusService');
 const { emitTaskAssigned, emitEmergencyAlert } = require('../sockets');
 
+const pickupDateSort = { 'timeSlot.date': 1, createdAt: 1 };
+
 // ---------------------------------------------------------------------------
 // Overview
 // ---------------------------------------------------------------------------
@@ -25,7 +27,7 @@ exports.getOverview = async (req, res) => {
       EmergencyAlert.countDocuments({ isActive: true }),
     ]);
 
-  const recentDonations = await Donation.find({ ngoId }).sort({ urgent: -1, createdAt: -1 }).limit(6).populate('donorId', 'name');
+  const recentDonations = await Donation.find({ ngoId }).sort(pickupDateSort).limit(6).populate('donorId', 'name');
 
   res.render('ngo/dashboard', {
     title: 'Lions Club Admin Dashboard',
@@ -38,13 +40,12 @@ exports.getOverview = async (req, res) => {
 // Manage Donations
 // ---------------------------------------------------------------------------
 exports.getDonationsList = async (req, res) => {
-  const { status, urgent, type } = req.query;
+  const { status, type } = req.query;
   const filter = { ngoId: req.user._id };
   if (status && Donation.STATUSES.includes(status)) filter.status = status;
-  if (urgent === '1') filter.urgent = true;
   if (type && Donation.TYPES.includes(type)) filter.type = type;
 
-  const donations = await Donation.find(filter).sort({ createdAt: 1 }).populate('donorId', 'name');
+  const donations = await Donation.find(filter).sort(pickupDateSort).populate('donorId', 'name');
 
   res.render('ngo/donations-list', {
     title: 'Manage Donations',
@@ -53,14 +54,6 @@ exports.getDonationsList = async (req, res) => {
     types: Donation.TYPES,
     query: req.query,
   });
-};
-
-exports.postToggleUrgent = async (req, res) => {
-  const donation = await Donation.findById(req.params.id);
-  if (!donation) return res.status(404).render('error', { title: 'Not found', message: 'Donation not found.' });
-  donation.urgent = !donation.urgent;
-  await donation.save();
-  res.redirect('/admin/donations');
 };
 
 exports.getAssignDonation = async (req, res) => {
@@ -256,7 +249,7 @@ exports.getVolunteerDetail = async (req, res) => {
 exports.getLogistics = async (req, res) => {
   const tasks = await Task.find({ ngoId: req.user._id, status: { $in: ['assigned', 'accepted', 'picked'] } })
     .sort({ createdAt: -1 })
-    .populate('donationId', 'donationCode type quantity timeSlot urgent')
+    .populate('donationId', 'donationCode type quantity timeSlot')
     .populate('foodRequestId', 'requirements deliveryAddress')
     .populate('beneficiaryId', 'name partnerName phone homeAddress')
     .populate('volunteerId', 'name phone');

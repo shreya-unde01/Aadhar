@@ -52,7 +52,6 @@ const donationValidators = [
   body('startTime').matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage('Please choose a start time'),
   body('endTime').matches(/^([01]\d|2[0-3]):[0-5]\d$/).withMessage('Please choose an end time'),
   body('expiryDate').optional({ checkFalsy: true }).isISO8601(),
-  body('urgent').optional().toBoolean(),
 ];
 
 function handleValidationErrors(req, res, next) {

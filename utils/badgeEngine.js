@@ -21,7 +21,6 @@ async function ensureBadgesSeeded() {
 }
 
 const POINTS_PER_DONATION = 10;
-const URGENT_BONUS = 5;
 
 /**
  * Runs once per newly-created donation. Updates the donor's running total
@@ -36,7 +35,7 @@ async function onDonationCreated(donation) {
   if (!donor) return;
 
   donor.totalDonations += 1;
-  donor.leaderboardScore += POINTS_PER_DONATION + (donation.urgent ? URGENT_BONUS : 0);
+  donor.leaderboardScore += POINTS_PER_DONATION;
 
   const earnedKeys = new Set();
   for (const b of donor.badges) {

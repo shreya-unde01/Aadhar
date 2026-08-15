@@ -11,7 +11,6 @@ router.get('/dashboard', asyncHandler(ngoController.getOverview));
 
 // Donations
 router.get('/donations', asyncHandler(ngoController.getDonationsList));
-router.post('/donations/:id/toggle-urgent', asyncHandler(ngoController.postToggleUrgent));
 router.get('/donations/:id/assign', asyncHandler(ngoController.getAssignDonation));
 router.post('/donations/:id/assign', asyncHandler(ngoController.postAssignVolunteer));
 

@@ -9,7 +9,6 @@
       <p class="muted">
         <%= donation.donationCode %> · <span style="text-transform:capitalize;"><%= donation.type %></span>
         · <%= donation.quantity %> <%= donation.unit || '' %> · from <%= donation.donorId.name %>
-        <% if (donation.urgent) { %> · <strong style="color: var(--color-danger);">URGENT</strong><% } %>
       </p>
     </div>
 

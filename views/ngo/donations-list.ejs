@@ -6,7 +6,7 @@
   <main class="container list-page">
     <div class="form-page-head">
       <h1>Manage Donations</h1>
-      <p class="muted">All donations across every donor. Assign volunteers, flag urgent items, and track progress.</p>
+      <p class="muted">All donations across every donor. Assign volunteers and track pickup progress.</p>
     </div>
 
     <div id="live-banner" class="alert alert-success" style="display:none; cursor:pointer;" onclick="location.reload()">
@@ -18,7 +18,6 @@
       <% statuses.forEach(s => { %>
         <a href="/admin/donations?status=<%= s %>" class="filter-tab <%= query.status === s ? 'active' : '' %>" style="text-transform:capitalize;"><%= s %></a>
       <% }) %>
-      <a href="/admin/donations?urgent=1" class="filter-tab <%= query.urgent === '1' ? 'active' : '' %>" style="color: var(--color-danger);">🚨 Urgent</a>
     </div>
 
     <% if (donations.length === 0) { %>
@@ -27,7 +26,7 @@
       <div class="card" style="padding:0; overflow-x:auto;">
         <table class="lb-table">
           <thead>
-            <tr><th>Code</th><th>Donor</th><th>Type</th><th>Qty</th><th>Status</th><th>Urgent</th><th>Pickup</th><th></th></tr>
+            <tr><th>Code</th><th>Donor</th><th>Type</th><th>Qty</th><th>Status</th><th>Pickup</th><th></th></tr>
           </thead>
           <tbody>
             <% donations.forEach(d => { %>
@@ -37,11 +36,6 @@
                 <td style="text-transform:capitalize;"><%= d.type %></td>
                 <td><%= d.quantity %> <%= d.unit || '' %></td>
                 <td><span class="pill pill-<%= d.status %>"><%= d.status %></span></td>
-                <td>
-                  <form method="POST" action="/admin/donations/<%= d._id %>/toggle-urgent" class="inline-form">
-                    <button type="submit" class="btn btn-sm <%= d.urgent ? 'btn-primary' : 'btn-outline' %>"><%= d.urgent ? '🚨 Urgent' : 'Mark urgent' %></button>
-                  </form>
-                </td>
                 <td class="muted"><%= new Date(d.timeSlot.date).toLocaleDateString() %></td>
                 <td>
                   <% if (d.status === 'pending') { %>

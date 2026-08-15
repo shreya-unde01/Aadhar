@@ -30,7 +30,6 @@ const donationSchema = new mongoose.Schema(
     expiryDate: { type: Date, default: null }, // food only
 
     status: { type: String, enum: DONATION_STATUSES, default: 'pending', index: true },
-    urgent: { type: Boolean, default: false },
 
     donationCode: { type: String, unique: true, required: true, index: true },
 

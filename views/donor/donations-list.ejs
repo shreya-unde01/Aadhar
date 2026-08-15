@@ -36,7 +36,6 @@
               <p class="muted mb-0"><%= d.quantity %> <%= d.unit || '' %> · <%= d.donationCode %></p>
               <p class="muted mb-0" style="font-size: var(--fs-caption);">
                 Pickup: <%= new Date(d.timeSlot.date).toLocaleDateString() %>, <%= d.timeSlot.startTime %>–<%= d.timeSlot.endTime %>
-                <% if (d.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
               </p>
             </div>
           </a>

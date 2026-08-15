@@ -32,10 +32,6 @@
         <label>Expiry Date <span class="muted">(food only)</span></label>
         <input type="date" class="item-expiry">
       </div>
-      <label class="checkbox-field">
-        <input type="checkbox" class="item-urgent">
-        Mark as urgent
-      </label>
     `;
     container.appendChild(row);
 
@@ -53,7 +49,6 @@
       unit: row.querySelector('.item-unit').value,
       description: row.querySelector('.item-description').value,
       expiryDate: row.querySelector('.item-expiry').value,
-      urgent: row.querySelector('.item-urgent').checked,
     }));
 
     if (items.length === 0 || items.some((i) => !i.quantity)) {

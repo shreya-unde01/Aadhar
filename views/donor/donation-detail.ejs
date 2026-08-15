@@ -46,7 +46,6 @@
           <dt>Pickup Address</dt><dd><%= donation.pickupLocation.address %></dd>
           <dt>Time Slot</dt><dd><%= new Date(donation.timeSlot.date).toLocaleDateString() %>, <%= donation.timeSlot.startTime %>–<%= donation.timeSlot.endTime %></dd>
           <% if (donation.expiryDate) { %><dt>Expires</dt><dd><%= new Date(donation.expiryDate).toLocaleDateString() %></dd><% } %>
-          <% if (donation.urgent) { %><dt>Priority</dt><dd style="color: var(--color-danger); font-weight:700;">Urgent</dd><% } %>
         </dl>
 
         <% if (mapsEnabled && donation.pickupLocation.lat != null && donation.pickupLocation.lng != null) { %>

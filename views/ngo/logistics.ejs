@@ -28,7 +28,6 @@
             <% if (t.beneficiaryId) { %><p class="muted mb-0" style="font-size: var(--fs-body-sm);">Recipient: <%= t.beneficiaryId.name %> &amp; <%= t.beneficiaryId.partnerName %></p><% } %>
             <p class="muted mb-0" style="font-size: var(--fs-caption);">
               <% if (t.donationId) { %>Pickup: <%= new Date(t.donationId.timeSlot.date).toLocaleDateString() %>, <%= t.donationId.timeSlot.startTime %>–<%= t.donationId.timeSlot.endTime %><% } else { %>Deliver to elderly household<% } %>
-              <% if (t.donationId && t.donationId.urgent) { %> · <span style="color: var(--color-danger); font-weight:700;">URGENT</span><% } %>
             </p>
 
             <div class="otp-box mt-sm">
