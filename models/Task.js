@@ -37,7 +37,9 @@ const taskSchema = new mongoose.Schema(
     // confirm the delivery actually reached the recipient (Transparency
     // System — see project spec, NGO Admin Dashboard section 4).
     deliveryOtp: { type: String, required: true },
+    deliveryOtpExpiresAt: { type: Date, default: null },
     deliveryOtpVerified: { type: Boolean, default: false },
+    proofPhoto: { type: String, default: null },
   },
   { timestamps: true }
 );

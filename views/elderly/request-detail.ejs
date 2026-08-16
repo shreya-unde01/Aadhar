@@ -162,6 +162,12 @@
             <strong>On The Way To You</strong>
             <% if (request.inTransitAt) { %>
               <span class="muted"><%= new Date(request.inTransitAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
+              <% if (!request.deliveredAt) { %>
+                <div style="margin-top: 0.5rem; padding: 0.75rem 1rem; background: var(--color-primary-tint); border-left: 3px solid var(--color-primary); border-radius: var(--radius-sm); font-size: 0.9rem;">
+                  <strong style="color: var(--color-primary-dark); margin-bottom: 2px;">Verification OTP Sent ✉️</strong>
+                  <span style="color: var(--color-ink-soft);">A 6-digit delivery verification code has been emailed to your registered email (<%= currentUser.email %>). Please share this code with the volunteer when they hand over your food.</span>
+                </div>
+              <% } %>
             <% } else { %>
               <p class="muted">Pending...</p>
             <% } %>
@@ -183,7 +189,15 @@
             <strong>Delivered</strong>
             <% if (request.deliveredAt) { %>
               <span class="muted"><%= new Date(request.deliveredAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) %></span>
-              <p class="muted" style="margin-top: 0.5rem;">Thank you for using AADHAR! 🙏</p>
+              <p class="muted" style="margin-top: 0.5rem;">Food delivered successfully. Thank you for using AADHAR! 🙏</p>
+              <% if (request.deliveryProofPhoto) { %>
+                <div style="margin-top: 0.75rem;">
+                  <span class="muted" style="font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 4px;">Delivery Proof Photo:</span>
+                  <a href="<%= request.deliveryProofPhoto %>" target="_blank" rel="noopener">
+                    <img src="<%= request.deliveryProofPhoto %>" alt="Delivery Proof" style="max-width: 220px; max-height: 160px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm);">
+                  </a>
+                </div>
+              <% } %>
             <% } else { %>
               <p class="muted">Expected soon...</p>
             <% } %>

@@ -3,10 +3,11 @@ const Donation = require('../models/Donation');
 const Feedback = require('../models/Feedback');
 const EmergencyAlert = require('../models/EmergencyAlert');
 const FoodRequest = require('../models/FoodRequest');
-const { Volunteer } = require('../models/User');
+const { Volunteer, User } = require('../models/User');
 const { haversineDistanceKm } = require('../utils/geo');
 const { updateDonationStatus } = require('../utils/donationStatusService');
 const { updateFoodRequestStatus } = require('../utils/foodRequestStatusService');
+const { sendDeliveryOtpEmail } = require('../utils/email');
 const { emitVolunteerTaskUpdate } = require('../sockets');
 
 // ---------------------------------------------------------------------------
@@ -163,6 +164,7 @@ exports.postStartDelivery = async (req, res) => {
   if (task) {
     task.status = 'in_transit';
     task.inTransitAt = new Date();
+    task.deliveryOtpExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24-hour expiration window
     await task.save();
     emitVolunteerTaskUpdate(task);
 
@@ -179,6 +181,18 @@ exports.postStartDelivery = async (req, res) => {
           req.user._id,
           'volunteer'
         );
+
+        // Fetch beneficiary user details to dispatch delivery OTP email
+        const recipient = await User.findById(task.beneficiaryId || foodRequest.householdId);
+        if (recipient && recipient.email) {
+          sendDeliveryOtpEmail({
+            toEmail: recipient.email,
+            recipientName: recipient.name || recipient.partnerName || 'Resident',
+            otp: task.deliveryOtp,
+            foodRequest,
+            task,
+          }).catch((err) => console.error('[volunteer] Delivery OTP email sending failed:', err.message));
+        }
       }
     }
   }
@@ -212,13 +226,18 @@ exports.postDeliver = async (req, res) => {
   if (!otp || otp.trim() !== task.deliveryOtp) {
     errors.push('The OTP entered does not match the code generated for this delivery.');
   }
+
+  if (task.deliveryOtpExpiresAt && new Date() > task.deliveryOtpExpiresAt) {
+    errors.push('The delivery verification OTP has expired. Please contact the NGO administrator.');
+  }
+
   if (!rating || !['1', '2', '3', '4', '5'].includes(String(rating))) {
     errors.push('Please select a star rating.');
   }
   if (!category || !['good', 'average', 'bad'].includes(category)) {
     errors.push('Please choose a feedback category.');
   }
-  if (!req.files || !req.files.proofPhoto) {
+  if (!req.files || !req.files.proofPhoto || req.files.proofPhoto.length === 0) {
     errors.push('A delivery proof photo is required.');
   }
 
@@ -227,11 +246,12 @@ exports.postDeliver = async (req, res) => {
   }
 
   const proofPhotoPath = `/uploads/proofs/${req.files.proofPhoto[0].filename}`;
-  const voiceNotePath = req.files.voiceNote ? `/uploads/voicenotes/${req.files.voiceNote[0].filename}` : null;
+  const voiceNotePath = req.files.voiceNote && req.files.voiceNote.length > 0 ? `/uploads/voicenotes/${req.files.voiceNote[0].filename}` : null;
 
   task.status = 'delivered';
   task.deliveredAt = new Date();
   task.deliveryOtpVerified = true;
+  task.proofPhoto = proofPhotoPath;
   await task.save();
   emitVolunteerTaskUpdate(task);
 
@@ -240,12 +260,13 @@ exports.postDeliver = async (req, res) => {
     donation.deliveryProofPhoto = proofPhotoPath;
     await updateDonationStatus(donation, 'delivered', 'Delivered and confirmed by OTP');
   } else if (task.foodRequestId) {
-    const foodRequest = await FoodRequest.findById(task.foodRequestId._id);
+    const foodRequest = await FoodRequest.findById(task.foodRequestId._id || task.foodRequestId);
     if (foodRequest) {
+      foodRequest.deliveryProofPhoto = proofPhotoPath;
       await updateFoodRequestStatus(
         foodRequest,
         'delivered',
-        'Delivered and confirmed',
+        'Delivered and confirmed via OTP',
         req.user._id,
         'volunteer'
       );
@@ -255,7 +276,7 @@ exports.postDeliver = async (req, res) => {
   // Triggers volunteer completedTasks/avgRating recalculation (see Feedback model post-save hook)
   await Feedback.create({
     donationId: donation ? donation._id : null,
-    foodRequestId: task.foodRequestId ? task.foodRequestId._id : null,
+    foodRequestId: task.foodRequestId ? (task.foodRequestId._id || task.foodRequestId) : null,
     taskId: task._id,
     rating: Number(rating),
     category,

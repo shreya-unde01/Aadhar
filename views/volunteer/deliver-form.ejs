@@ -18,10 +18,16 @@
 
     <form method="POST" action="/volunteer/tasks/<%= task._id %>/deliver" enctype="multipart/form-data" class="card">
       <h2>Delivery OTP</h2>
-      <p class="hint">Ask the recipient (or check with the NGO) for the code generated when this task was assigned, then enter it below to confirm the handoff.</p>
+      <p class="hint">
+        <% if (task.foodRequestId) { %>
+          Ask the elderly recipient for the 6-digit verification code sent to their registered email address, then enter it below.
+        <% } else { %>
+          Ask the recipient (or check with the NGO) for the code generated when this task was assigned, then enter it below to confirm the handoff.
+        <% } %>
+      </p>
       <div class="field">
-        <label for="otp">OTP</label>
-        <input type="text" name="otp" id="otp" inputmode="numeric" maxlength="6" placeholder="6-digit code" required>
+        <label for="otp">OTP (6 Digits)</label>
+        <input type="text" name="otp" id="otp" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit code" value="<%= formData && formData.otp ? formData.otp : '' %>" required>
       </div>
 
       <hr class="divider">

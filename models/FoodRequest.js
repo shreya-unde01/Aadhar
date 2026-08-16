@@ -22,6 +22,7 @@ const foodRequestSchema = new mongoose.Schema(
     pickedAt: { type: Date, default: null },
     inTransitAt: { type: Date, default: null },
     deliveredAt: { type: Date, default: null },
+    deliveryProofPhoto: { type: String, default: null },
 
     // Complete status history for full transparency
     statusHistory: [
